@@ -1,4 +1,4 @@
-name: Kakasibi macOS CI
+name: META macOS CI
 
 on:
   push:
