@@ -95,7 +95,7 @@ struct ContentView: View {
         case .heatmap:
             HeatmapView()
         case .analytics:
-            AnalyticsPageView()
+            AnalyticsView()
         case .none:
             Text("Select an item")
         }
