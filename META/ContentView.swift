@@ -26,7 +26,7 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Item]
 
-    @State private var selection: SidebarItem? = .heatmap
+    @State private var selection: SidebarItem? = .dashboard
 
     var body: some View {
         NavigationSplitView {
@@ -34,57 +34,51 @@ struct ContentView: View {
         } detail: {
             detailView
         }
+        .preferredColorScheme(.light) // Force light mode
     }
 
     private var sidebar: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Image("NusantaraLogo")
-                .resizable()
-                .scaledToFit()
-                .frame(height: 32)
+            // Logo
+            HStack {
+                Image("Logo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 40)
+                
+                Spacer()
+            }
+            .padding(.top, 12)
 
-            ForEach(SidebarItem.allCases) { item in
-                Button {
-                    selection = item
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: item.systemIcon)
-                            .frame(width: 20)
-                        Text(item.rawValue)
+            // Navigation Buttons
+            VStack(spacing: 12) {
+                ForEach(SidebarItem.allCases) { item in
+                    SidebarButton(
+                        title: item.rawValue,
+                        systemIcon: item.systemIcon,
+                        isSelected: selection == item
+                    ) {
+                        selection = item
                     }
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 12)
-                    .background(selection == item
-                                ? Color.accentColor.opacity(0.2)
-                                : Color.clear)
-                    .cornerRadius(8)
-                    .foregroundColor(selection == item
-                                     ? .accentColor
-                                     : .primary)
                 }
-                .buttonStyle(.plain)
             }
 
             Spacer()
 
-            // Log out
-            Button {
-                // your logout logic
-            } label: {
-                HStack(spacing: 12) {
-                    Image(systemName: "arrow.left.square")
-                        .frame(width: 20)
-                    Text("Log Out")
-                }
-                .padding(.vertical, 8)
-                .padding(.horizontal, 12)
-                .foregroundColor(.primary)
+            // Log out button
+            SidebarButton(
+                title: "Log Out",
+                systemIcon: "arrow.left.square",
+                isSelected: false
+            ) {
+                // Logout logic here
             }
-            .buttonStyle(.plain)
+            .padding(.bottom, 20)
         }
-        .padding(16)
-        .frame(minWidth: 180, idealWidth: 200)
-        .background(Color(nsColor: .windowBackgroundColor))
+        .padding(.horizontal, 16)
+        .padding(.top, 16)
+        .frame(minWidth: 280, idealWidth: 300)
+        .background(Color.white)
     }
 
     @ViewBuilder
@@ -98,6 +92,8 @@ struct ContentView: View {
             AnalyticsView()
         case .none:
             Text("Select an item")
+                .font(.title)
+                .foregroundColor(Color("ColorGrayPrimary"))
         }
     }
 
