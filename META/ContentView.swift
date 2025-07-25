@@ -8,16 +8,21 @@ import SwiftUI
 import SwiftData
 
 enum SidebarItem: String, CaseIterable, Identifiable {
-    case dashboard = "Dashboard"
-    case heatmap   = "Heatmap"
-    case analytics = "Analytics"
+    case visualData = "Visual Data"
+    case rawData = "Raw Data"
 
     var id: String { rawValue }
     var systemIcon: String {
         switch self {
-        case .dashboard: return "speedometer"
-        case .heatmap:   return "square.grid.3x3.fill"
-        case .analytics: return "chart.bar"
+        case .visualData: return "chart.pie"
+        case .rawData: return "doc.text"
+        }
+    }
+    
+    var iconName: String {
+        switch self {
+        case .visualData: return "DashboardIcon"
+        case .rawData: return "RawDataIcon"
         }
     }
 }
@@ -26,25 +31,52 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Item]
 
-    @State private var selection: SidebarItem? = .dashboard
+    @State private var selection: SidebarItem? = .visualData
+    @State private var searchText = ""
 
     var body: some View {
         NavigationSplitView {
             sidebar
         } detail: {
-            detailView
+            VStack(spacing: 0) {
+                // Header Section
+                headerSection
+                
+                // Detail View
+                detailView
+            }
         }
         .preferredColorScheme(.light) // Force light mode
+    }
+    
+    private var headerSection: some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Hi there")
+                    .font(.system(size: 14, weight: .regular))
+                    .foregroundColor(Color("ColorGrayPrimary"))
+                
+                Text("Kaori Hanami")
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundColor(Color("ColorBluePrimary"))
+            }
+            
+            Spacer()
+        }
+        .padding(.horizontal, 24)
+        .padding(.top, 24)
+        .padding(.bottom, 32)
+        .background(Color.white)
     }
 
     private var sidebar: some View {
         VStack(alignment: .leading, spacing: 24) {
-            // Logo
+            // Logo (made larger)
             HStack {
                 Image("Logo")
                     .resizable()
                     .scaledToFit()
-                    .frame(height: 40)
+                    .frame(height: 60)
                 
                 Spacer()
             }
@@ -77,19 +109,17 @@ struct ContentView: View {
         }
         .padding(.horizontal, 16)
         .padding(.top, 16)
-        .frame(minWidth: 280, idealWidth: 300)
+        .frame(minWidth: 260, idealWidth: 280)
         .background(Color.white)
     }
 
     @ViewBuilder
     private var detailView: some View {
         switch selection {
-        case .dashboard:
-            DashboardView()
-        case .heatmap:
-            HeatmapView()
-        case .analytics:
-            AnalyticsView()
+        case .visualData:
+            VisualDataView()
+        case .rawData:
+            RawDataView()
         case .none:
             Text("Select an item")
                 .font(.title)
