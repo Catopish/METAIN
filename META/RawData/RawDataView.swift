@@ -14,30 +14,38 @@ struct RawDataView: View {
     let filterOptions = ["All", "Car", "Bus", "Truck"]
     
     let rawTrafficData = [
-        RawTrafficEntry(id: 1, timestamp: "2025-07-18 10:30:00", location: "Off Ramp Serpong 2", vehicleType: "Car", count: 45),
-        RawTrafficEntry(id: 2, timestamp: "2025-07-18 10:30:00", location: "Off Ramp Serpong 2", vehicleType: "Bus", count: 12),
-        RawTrafficEntry(id: 3, timestamp: "2025-07-18 10:30:00", location: "Off Ramp Serpong 2", vehicleType: "Truck", count: 8),
-        RawTrafficEntry(id: 4, timestamp: "2025-07-18 10:31:00", location: "On Ramp Serpong 3", vehicleType: "Car", count: 52),
-        RawTrafficEntry(id: 5, timestamp: "2025-07-18 10:31:00", location: "On Ramp Serpong 3", vehicleType: "Bus", count: 15),
-        RawTrafficEntry(id: 6, timestamp: "2025-07-18 10:31:00", location: "On Ramp Serpong 3", vehicleType: "Truck", count: 6),
-        RawTrafficEntry(id: 7, timestamp: "2025-07-18 10:32:00", location: "Off Ramp Serpong 7", vehicleType: "Car", count: 38),
-        RawTrafficEntry(id: 8, timestamp: "2025-07-18 10:32:00", location: "Off Ramp Serpong 7", vehicleType: "Bus", count: 9),
-        RawTrafficEntry(id: 9, timestamp: "2025-07-18 10:32:00", location: "Off Ramp Serpong 7", vehicleType: "Truck", count: 11),
-        RawTrafficEntry(id: 10, timestamp: "2025-07-18 10:33:00", location: "On Ramp Serpong 6", vehicleType: "Car", count: 41)
+        RawTrafficEntry(id: 1, tanggal: "1 July 2025", jam: "00.00 - 01.00", route: "jakarta-pagedangan", mobil: 159, bus: 59, truk: 102),
+        RawTrafficEntry(id: 2, tanggal: "1 July 2025", jam: "00.00 - 01.00", route: "bintaro-out", mobil: 80, bus: 84, truk: 99),
+        RawTrafficEntry(id: 3, tanggal: "1 July 2025", jam: "00.00 - 01.00", route: "bintaro-in", mobil: 118, bus: 116, truk: 41),
+        RawTrafficEntry(id: 4, tanggal: "1 July 2025", jam: "00.00 - 01.00", route: "jakarta-pamulang", mobil: 180, bus: 116, truk: 48),
+        RawTrafficEntry(id: 5, tanggal: "1 July 2025", jam: "00.00 - 01.00", route: "jakarta-alam sutera", mobil: 165, bus: 155, truk: 32),
+        RawTrafficEntry(id: 6, tanggal: "1 July 2025", jam: "00.00 - 01.00", route: "pagedangan-alam sutera", mobil: 175, bus: 37, truk: 179),
+        RawTrafficEntry(id: 7, tanggal: "1 July 2025", jam: "00.00 - 01.00", route: "pagedangan-pamulang", mobil: 102, bus: 48, truk: 32),
+        RawTrafficEntry(id: 8, tanggal: "1 July 2025", jam: "00.00 - 01.00", route: "pamulang-pagedangan", mobil: 147, bus: 134, truk: 47),
+        RawTrafficEntry(id: 9, tanggal: "1 July 2025", jam: "00.00 - 01.00", route: "pamulang-jakarta", mobil: 83, bus: 49, truk: 41),
+        RawTrafficEntry(id: 10, tanggal: "1 July 2025", jam: "00.00 - 01.00", route: "alam sutera-jakarta", mobil: 142, bus: 130, truk: 40),
+        RawTrafficEntry(id: 11, tanggal: "1 July 2025", jam: "00.00 - 01.00", route: "alam sutera-pagedangan", mobil: 84, bus: 80, truk: 33),
+        RawTrafficEntry(id: 12, tanggal: "1 July 2025", jam: "01.00 - 02.00", route: "jakarta-pagedangan", mobil: 82, bus: 48, truk: 47),
+        RawTrafficEntry(id: 13, tanggal: "1 July 2025", jam: "01.00 - 02.00", route: "bintaro-out", mobil: 170, bus: 112, truk: 47),
+        RawTrafficEntry(id: 14, tanggal: "1 July 2025", jam: "01.00 - 02.00", route: "bintaro-in", mobil: 118, bus: 49, truk: 46)
     ]
     
     var filteredData: [RawTrafficEntry] {
-        let searchFiltered = rawTrafficData.filter { entry in
+        rawTrafficData.filter { entry in
             searchText.isEmpty ||
-            entry.location.localizedCaseInsensitiveContains(searchText) ||
-            entry.vehicleType.localizedCaseInsensitiveContains(searchText)
+            entry.route.localizedCaseInsensitiveContains(searchText) ||
+            entry.tanggal.localizedCaseInsensitiveContains(searchText) ||
+            entry.jam.localizedCaseInsensitiveContains(searchText)
         }
-        
-        if selectedFilter == "All" {
-            return searchFiltered
-        } else {
-            return searchFiltered.filter { $0.vehicleType == selectedFilter }
+    }
+    
+    var totalVehicles: (mobil: Int, bus: Int, truk: Int) {
+        let totals = filteredData.reduce((mobil: 0, bus: 0, truk: 0)) { result, entry in
+            (mobil: result.mobil + entry.mobil,
+             bus: result.bus + entry.bus,
+             truk: result.truk + entry.truk)
         }
+        return totals
     }
     
     var body: some View {
@@ -57,19 +65,16 @@ struct RawDataView: View {
     private var controlsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                VStack{
-                    HStack{
-                        Text("CSV file")
-                        Spacer()
-                    }
-                    HStack{
-                        DateFilterWithCalendar()
-                            .frame(width: 250,height: 30)
-                        Spacer()
-                    }
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("CSV file")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(Color("ColorBluePrimary"))
+                    
+                    DateFilterWithCalendar()
+                        .frame(width: 250, height: 30)
                 }
-                Spacer()
                 
+                Spacer()
                 
                 
                 // Export Button
@@ -84,44 +89,14 @@ struct RawDataView: View {
                     }
                     .foregroundColor(.white)
                     .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
+                    .padding(.vertical, 8)
                     .background(Color("ColorBluePrimary"))
                     .cornerRadius(8)
                 }
                 .buttonStyle(PlainButtonStyle())
             }
             
-//            // Summary Stats
-//            HStack(spacing: 24) {
-//                VStack(alignment: .leading, spacing: 4) {
-//                    Text("Total Records")
-//                        .font(.system(size: 12))
-//                        .foregroundColor(Color("ColorGrayPrimary"))
-//                    Text("\(filteredData.count)")
-//                        .font(.system(size: 20, weight: .bold))
-//                        .foregroundColor(Color("ColorBluePrimary"))
-//                }
-//                
-//                VStack(alignment: .leading, spacing: 4) {
-//                    Text("Total Vehicles")
-//                        .font(.system(size: 12))
-//                        .foregroundColor(Color("ColorGrayPrimary"))
-//                    Text("\(filteredData.reduce(0) { $0 + $1.count })")
-//                        .font(.system(size: 20, weight: .bold))
-//                        .foregroundColor(Color("ColorBluePrimary"))
-//                }
-//                
-//                VStack(alignment: .leading, spacing: 4) {
-//                    Text("Active Locations")
-//                        .font(.system(size: 12))
-//                        .foregroundColor(Color("ColorGrayPrimary"))
-//                    Text("\(Set(filteredData.map { $0.location }).count)")
-//                        .font(.system(size: 20, weight: .bold))
-//                        .foregroundColor(Color("ColorBluePrimary"))
-//                }
-//                
-//                Spacer()
-//            }
+
         }
         .padding(24)
         .background(Color.white)
@@ -130,33 +105,39 @@ struct RawDataView: View {
     private var dataTable: some View {
         VStack(alignment: .leading, spacing: 0) {
             // Table Header
-            HStack {
-                Text("ID")
+            HStack(spacing: 0) {
+                Text("Tanggal")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(Color("ColorGrayPrimary"))
-                    .frame(width: 60, alignment: .leading)
+                    .frame(width: 120, alignment: .leading)
+                    .padding(.leading, 24)
                 
-                Text("Timestamp")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(Color("ColorGrayPrimary"))
-                    .frame(width: 150, alignment: .leading)
-                
-                Text("Location")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(Color("ColorGrayPrimary"))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                
-                Text("Vehicle Type")
+                Text("Jam")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(Color("ColorGrayPrimary"))
                     .frame(width: 120, alignment: .leading)
                 
-                Text("Count")
+                Text("Rute")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(Color("ColorGrayPrimary"))
-                    .frame(width: 80, alignment: .trailing)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                Text("Mobil")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(Color("ColorGrayPrimary"))
+                    .frame(width: 80, alignment: .center)
+                
+                Text("Bus")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(Color("ColorGrayPrimary"))
+                    .frame(width: 80, alignment: .center)
+                
+                Text("Truk")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(Color("ColorGrayPrimary"))
+                    .frame(width: 80, alignment: .center)
+                    .padding(.trailing, 24)
             }
-            .padding(.horizontal, 24)
             .padding(.vertical, 16)
             .background(Color("ColorGraySecondary").opacity(0.3))
             
@@ -164,44 +145,49 @@ struct RawDataView: View {
             ScrollView {
                 LazyVStack(spacing: 0) {
                     ForEach(filteredData, id: \.id) { entry in
-                        HStack {
-                            Text("\(entry.id)")
+                        HStack(spacing: 0) {
+                            Text(entry.tanggal)
                                 .font(.system(size: 14))
                                 .foregroundColor(Color("ColorBluePrimary"))
-                                .frame(width: 60, alignment: .leading)
+                                .frame(width: 120, alignment: .leading)
+                                .padding(.leading, 24)
                             
-                            Text(entry.timestamp)
+                            Text(entry.jam)
                                 .font(.system(size: 14))
                                 .foregroundColor(Color("ColorBluePrimary"))
-                                .frame(width: 150, alignment: .leading)
+                                .frame(width: 120, alignment: .leading)
                             
-                            Text(entry.location)
+                            Text(entry.route)
                                 .font(.system(size: 14))
                                 .foregroundColor(Color("ColorBluePrimary"))
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             
-                            HStack(spacing: 8) {
-                                Circle()
-                                    .fill(colorForVehicleType(entry.vehicleType))
-                                    .frame(width: 8, height: 8)
-                                Text(entry.vehicleType)
-                                    .font(.system(size: 14))
-                                    .foregroundColor(Color("ColorBluePrimary"))
-                            }
-                            .frame(width: 120, alignment: .leading)
-                            
-                            Text("\(entry.count)")
+                            Text("\(entry.mobil)")
                                 .font(.system(size: 14, weight: .medium))
                                 .foregroundColor(Color("ColorBluePrimary"))
-                                .frame(width: 80, alignment: .trailing)
+                                .frame(width: 80, alignment: .center)
+                            
+                            Text("\(entry.bus)")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(Color("ColorBlueSecondary"))
+                                .frame(width: 80, alignment: .center)
+                            
+                            Text("\(entry.truk)")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(Color("ColorGrayPrimary"))
+                                .frame(width: 80, alignment: .center)
+                                .padding(.trailing, 24)
                         }
-                        .padding(.horizontal, 24)
                         .padding(.vertical, 12)
-                        .background(Color.white)
+                        .background(
+                            entry.id % 2 == 0 ?
+                            Color("ColorGraySecondary").opacity(0.05) :
+                            Color.white
+                        )
                         
                         if entry.id != filteredData.last?.id {
                             Divider()
-                                .background(Color("ColorGraySecondary").opacity(0.5))
+                                .background(Color("ColorGraySecondary").opacity(0.3))
                         }
                     }
                 }
@@ -212,31 +198,20 @@ struct RawDataView: View {
         .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
         .padding(24)
     }
-    
-    private func colorForVehicleType(_ type: String) -> Color {
-        switch type {
-        case "Car":
-            return Color("ColorBluePrimary")
-        case "Bus":
-            return Color("ColorBlueSecondary")
-        case "Truck":
-            return Color("ColorGrayPrimary")
-        default:
-            return Color("ColorGrayPrimary")
-        }
-    }
 }
 
 // MARK: - Data Model
 struct RawTrafficEntry {
     let id: Int
-    let timestamp: String
-    let location: String
-    let vehicleType: String
-    let count: Int
+    let tanggal: String
+    let jam: String
+    let route: String
+    let mobil: Int
+    let bus: Int
+    let truk: Int
 }
 
 #Preview {
     RawDataView()
-        .frame(width: 1000, height: 600)
+        .frame(width: 1200, height: 700)
 }
