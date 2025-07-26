@@ -28,7 +28,7 @@ struct RawDataView: View {
     
     var filteredData: [RawTrafficEntry] {
         let searchFiltered = rawTrafficData.filter { entry in
-            searchText.isEmpty || 
+            searchText.isEmpty ||
             entry.location.localizedCaseInsensitiveContains(searchText) ||
             entry.vehicleType.localizedCaseInsensitiveContains(searchText)
         }
@@ -44,9 +44,11 @@ struct RawDataView: View {
         VStack(alignment: .leading, spacing: 0) {
             // Controls Section
             controlsSection
+                .zIndex(2)
             
             // Data Table
             dataTable
+                .zIndex(1)
         }
         .background(Color("ColorGraySecondary"))
         .preferredColorScheme(.light)
@@ -55,54 +57,20 @@ struct RawDataView: View {
     private var controlsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                // Search Bar
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(Color("ColorGrayPrimary"))
-                        .font(.system(size: 16))
-                    
-                    TextField("Search locations or vehicle types...", text: $searchText)
-                        .textFieldStyle(PlainTextFieldStyle())
-                        .font(.system(size: 14))
+                VStack{
+                    HStack{
+                        Text("CSV file")
+                        Spacer()
+                    }
+                    HStack{
+                        DateFilterWithCalendar()
+                            .frame(width: 250,height: 30)
+                        Spacer()
+                    }
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .background(Color.white)
-                .cornerRadius(8)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color("ColorGrayPrimary").opacity(0.3), lineWidth: 1)
-                )
-                .frame(maxWidth: 400)
-                
                 Spacer()
                 
-                // Filter Dropdown
-                Menu {
-                    ForEach(filterOptions, id: \.self) { option in
-                        Button(option) {
-                            selectedFilter = option
-                        }
-                    }
-                } label: {
-                    HStack(spacing: 8) {
-                        Text("Filter: \(selectedFilter)")
-                            .font(.system(size: 14))
-                            .foregroundColor(Color("ColorBluePrimary"))
-                        
-                        Image(systemName: "chevron.down")
-                            .font(.system(size: 12))
-                            .foregroundColor(Color("ColorGrayPrimary"))
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .background(Color.white)
-                    .cornerRadius(8)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color("ColorGrayPrimary").opacity(0.3), lineWidth: 1)
-                    )
-                }
+                
                 
                 // Export Button
                 Button(action: {
@@ -123,37 +91,37 @@ struct RawDataView: View {
                 .buttonStyle(PlainButtonStyle())
             }
             
-            // Summary Stats
-            HStack(spacing: 24) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Total Records")
-                        .font(.system(size: 12))
-                        .foregroundColor(Color("ColorGrayPrimary"))
-                    Text("\(filteredData.count)")
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundColor(Color("ColorBluePrimary"))
-                }
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Total Vehicles")
-                        .font(.system(size: 12))
-                        .foregroundColor(Color("ColorGrayPrimary"))
-                    Text("\(filteredData.reduce(0) { $0 + $1.count })")
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundColor(Color("ColorBluePrimary"))
-                }
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Active Locations")
-                        .font(.system(size: 12))
-                        .foregroundColor(Color("ColorGrayPrimary"))
-                    Text("\(Set(filteredData.map { $0.location }).count)")
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundColor(Color("ColorBluePrimary"))
-                }
-                
-                Spacer()
-            }
+//            // Summary Stats
+//            HStack(spacing: 24) {
+//                VStack(alignment: .leading, spacing: 4) {
+//                    Text("Total Records")
+//                        .font(.system(size: 12))
+//                        .foregroundColor(Color("ColorGrayPrimary"))
+//                    Text("\(filteredData.count)")
+//                        .font(.system(size: 20, weight: .bold))
+//                        .foregroundColor(Color("ColorBluePrimary"))
+//                }
+//                
+//                VStack(alignment: .leading, spacing: 4) {
+//                    Text("Total Vehicles")
+//                        .font(.system(size: 12))
+//                        .foregroundColor(Color("ColorGrayPrimary"))
+//                    Text("\(filteredData.reduce(0) { $0 + $1.count })")
+//                        .font(.system(size: 20, weight: .bold))
+//                        .foregroundColor(Color("ColorBluePrimary"))
+//                }
+//                
+//                VStack(alignment: .leading, spacing: 4) {
+//                    Text("Active Locations")
+//                        .font(.system(size: 12))
+//                        .foregroundColor(Color("ColorGrayPrimary"))
+//                    Text("\(Set(filteredData.map { $0.location }).count)")
+//                        .font(.system(size: 20, weight: .bold))
+//                        .foregroundColor(Color("ColorBluePrimary"))
+//                }
+//                
+//                Spacer()
+//            }
         }
         .padding(24)
         .background(Color.white)
@@ -270,4 +238,5 @@ struct RawTrafficEntry {
 
 #Preview {
     RawDataView()
-} 
+        .frame(width: 1000, height: 600)
+}
