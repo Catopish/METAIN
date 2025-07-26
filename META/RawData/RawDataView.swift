@@ -6,10 +6,13 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct RawDataView: View {
     @State private var searchText = ""
     @State private var selectedFilter = "All"
+    @State private var showingExporter = false
+    @State private var csvDocument: CSVDocument?
     
     let filterOptions = ["All", "Car", "Bus", "Truck"]
     
@@ -60,6 +63,20 @@ struct RawDataView: View {
         }
         .background(Color("ColorGraySecondary"))
         .preferredColorScheme(.light)
+        .fileExporter(
+            isPresented: $showingExporter,
+            document: csvDocument,
+            contentType: .commaSeparatedText,
+            defaultFilename: "traffic_data_\(Date().formatted(date: .numeric, time: .omitted).replacingOccurrences(of: "/", with: "-"))"
+        ) { result in
+            switch result {
+            case .success(let url):
+                print("CSV exported successfully to: \(url)")
+            case .failure(let error):
+                print("Export failed: \(error.localizedDescription)")
+            }
+            csvDocument = nil
+        }
     }
     
     private var controlsSection: some View {
@@ -79,7 +96,7 @@ struct RawDataView: View {
                 
                 // Export Button
                 Button(action: {
-                    // Export functionality
+                    exportToCSV()
                 }) {
                     HStack(spacing: 8) {
                         Image(systemName: "square.and.arrow.up")
@@ -198,6 +215,52 @@ struct RawDataView: View {
         .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
         .padding(24)
     }
+    
+    // MARK: - Export Functions
+    private func exportToCSV() {
+        let csvString = generateCSV()
+        csvDocument = CSVDocument(text: csvString)
+        showingExporter = true
+    }
+    
+    private func generateCSV() -> String {
+        var csvString = "Tanggal,Jam,Rute,Mobil,Bus,Truk\n"
+        
+        for entry in filteredData {
+            // Escape commas in route names if needed
+            let route = entry.route.contains(",") ? "\"\(entry.route)\"" : entry.route
+            csvString += "\(entry.tanggal),\(entry.jam),\(route),\(entry.mobil),\(entry.bus),\(entry.truk)\n"
+        }
+        
+        // Add summary row
+        csvString += "\nTotal,,,\(totalVehicles.mobil),\(totalVehicles.bus),\(totalVehicles.truk)\n"
+        
+        return csvString
+    }
+}
+
+// MARK: - CSV Document
+struct CSVDocument: FileDocument {
+    static var readableContentTypes: [UTType] { [.commaSeparatedText] }
+    
+    var text: String
+    
+    init(text: String) {
+        self.text = text
+    }
+    
+    init(configuration: ReadConfiguration) throws {
+        guard let data = configuration.file.regularFileContents,
+              let string = String(data: data, encoding: .utf8) else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+        text = string
+    }
+    
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+        let data = text.data(using: .utf8)!
+        return .init(regularFileWithContents: data)
+    }
 }
 
 // MARK: - Data Model
@@ -210,6 +273,7 @@ struct RawTrafficEntry {
     let bus: Int
     let truk: Int
 }
+
 
 #Preview {
     RawDataView()
