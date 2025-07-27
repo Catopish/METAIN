@@ -169,10 +169,11 @@ struct DateFilterWithCalendar: View {
                     insertion: .opacity.combined(with: .scale(scale: 0.95)).combined(with: .move(edge: .top)),
                     removal: .opacity.combined(with: .scale(scale: 0.95))
                 ))
-                .zIndex(10000) // High z-index to ensure it appears above everything
+                .zIndex(10000) // Very high z-index to ensure it appears above everything
                 .allowsHitTesting(true)
             }
         }
+        .zIndex(isExpanded ? 10000 : 1) // Adjust entire component z-index when expanded
         // Background tap to close
         .background(
             isExpanded ?
