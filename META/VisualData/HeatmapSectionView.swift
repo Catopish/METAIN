@@ -4,7 +4,11 @@ import MapKit
 struct HeatmapSectionView: View {
     @Binding var selectedRoute: RouteOption
     @Binding var region: MKCoordinateRegion
-    let trafficSegments: [TrafficSegment]
+    
+    // Computed property to get dynamic traffic segments based on selected route
+    private var dynamicTrafficSegments: [TrafficSegment] {
+        TrafficDataService.getTrafficSegmentsForRoute(selectedRoute)
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -20,6 +24,16 @@ struct HeatmapSectionView: View {
                     ForEach(RouteOption.allRoutes) { route in
                         Button(route.displayName) {
                             selectedRoute = route
+                            
+                            // Update map region to focus on the selected route
+                            let coordinates = TrafficDataService.getRouteCoordinates(for: route)
+                            let centerLat = (coordinates.start.latitude + coordinates.end.latitude) / 2
+                            let centerLon = (coordinates.start.longitude + coordinates.end.longitude) / 2
+                            
+                            region = MKCoordinateRegion(
+                                center: CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon),
+                                span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+                            )
                         }
                     }
                 } label: {
@@ -55,11 +69,57 @@ struct HeatmapSectionView: View {
             .zIndex(1000) // Move z-index to the entire filter row
             
             // Map - with lower z-index
-            TrafficMapView(segments: trafficSegments, region: $region)
-                .frame(height: 400)
-                .cornerRadius(12)
-                .shadow(radius: 4)
-                .zIndex(1) // Lower z-index than date filter
+            VStack(spacing: 0) {
+                TrafficMapView(segments: dynamicTrafficSegments, region: $region)
+                    .frame(height: 400)
+                    .cornerRadius(12)
+                    .shadow(radius: 4)
+                    .zIndex(1) // Lower z-index than date filter
+                
+                // Traffic intensity legend
+                HStack(spacing: 0) {
+                    // Green section
+                    Rectangle()
+                        .fill(TrafficDataService.heatmapColorForVehicleCount(2850))
+                        .frame(height: 20)
+                    
+                    // Gradient section
+                    LinearGradient(
+                        colors: [
+                            TrafficDataService.heatmapColorForVehicleCount(2850),
+                            TrafficDataService.heatmapColorForVehicleCount(3990),
+                            TrafficDataService.heatmapColorForVehicleCount(5700)
+                        ],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                    .frame(height: 20)
+                    
+                    // Red section  
+                    Rectangle()
+                        .fill(TrafficDataService.heatmapColorForVehicleCount(5700))
+                        .frame(height: 20)
+                }
+                .overlay(
+                    HStack {
+                        Text("Light")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.black)
+                        Spacer()
+                        Text("Medium")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.black)
+                        Spacer()
+                        Text("Heavy")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.white)
+                    }
+                    .padding(.horizontal, 8)
+                )
+                .cornerRadius(6)
+                .frame(width: 180)
+                .padding(.top, 8)
+            }
         }
         .padding(20)
         .background(Color.white)

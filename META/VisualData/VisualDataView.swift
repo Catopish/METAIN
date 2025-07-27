@@ -1,22 +1,22 @@
-//
-//  VisualDataView.swift
-//  META
-//
-//  Created by Al Amin Dwiesta on 22/07/25.
-//
-
 import SwiftUI
 import MapKit
 
-// MARK: - Visual Data View
 struct VisualDataView: View {
-    @State private var region = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: -6.294252169538141, longitude: 106.7169941191576), // BSD Toll Road
-        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-    )
-    
     // Heatmap filters
     @State private var selectedRoute = RouteOption.allRoutes[4] // Jakarta - Alam Sutera as default
+    
+    // Dynamic region based on selected route
+    @State private var region: MKCoordinateRegion = {
+        let defaultRoute = RouteOption.allRoutes[4] // Jakarta - Alam Sutera
+        let coordinates = TrafficDataService.getRouteCoordinates(for: defaultRoute)
+        let centerLat = (coordinates.start.latitude + coordinates.end.latitude) / 2
+        let centerLon = (coordinates.start.longitude + coordinates.end.longitude) / 2
+        
+        return MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon),
+            span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+        )
+    }()
     
     // Comparison filters
     @State private var selectedYear = 2025
@@ -29,8 +29,7 @@ struct VisualDataView: View {
                 // Heatmap Section
                 HeatmapSectionView(
                     selectedRoute: $selectedRoute,
-                    region: $region,
-                    trafficSegments: TrafficDataService.sampleTrafficSegments
+                    region: $region
                 )
                 
                 // Vehicle Count Cards

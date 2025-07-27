@@ -64,13 +64,13 @@ struct TrafficDataService {
     static let sampleTrafficSegments: [TrafficSegment] = [
         .init(start: CLLocationCoordinate2D(latitude: -6.30497, longitude: 106.64173),
               end:   CLLocationCoordinate2D(latitude: -6.30617, longitude: 106.64455),
-              weight: 50),
+              weight: 2850), // Green level
         .init(start: CLLocationCoordinate2D(latitude: -6.30617, longitude: 106.64455),
               end:   CLLocationCoordinate2D(latitude: -6.30397, longitude: 106.65769),
-              weight: 150),
+              weight: 3990), // Yellow level
         .init(start: CLLocationCoordinate2D(latitude: -6.30397, longitude: 106.65769),
               end:   CLLocationCoordinate2D(latitude: -6.30293, longitude: 106.66266),
-              weight: 300)
+              weight: 5700)  // Red level
     ]
     
     static let sampleVehicleData = [
@@ -123,6 +123,90 @@ struct TrafficDataService {
         HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "alam-sutera-pagedangan", carCount: 98, busCount: 83, truckCount: 35)
     ]
     
+    // Helper function to get route coordinates based on the provided data
+    static func getRouteCoordinates(for route: RouteOption) -> (start: CLLocationCoordinate2D, end: CLLocationCoordinate2D) {
+        switch route.name {
+        case "jakarta-pagedangan":
+            return (
+                start: CLLocationCoordinate2D(latitude: -6.28572, longitude: 106.73091),
+                end: CLLocationCoordinate2D(latitude: -6.30782, longitude: 106.69069)
+            )
+        case "bintaro-out":
+            return (
+                start: CLLocationCoordinate2D(latitude: -6.28984, longitude: 106.72461),
+                end: CLLocationCoordinate2D(latitude: -6.28687, longitude: 106.72674)
+            )
+        case "bintaro-in":
+            return (
+                start: CLLocationCoordinate2D(latitude: -6.28889, longitude: 106.72886),
+                end: CLLocationCoordinate2D(latitude: -6.29013, longitude: 106.72485)
+            )
+        case "jakarta-pamulang":
+            return (
+                start: CLLocationCoordinate2D(latitude: -6.29797, longitude: 106.70813),
+                end: CLLocationCoordinate2D(latitude: -6.30534, longitude: 106.70586)
+            )
+        case "jakarta-alam-sutera":
+            return (
+                start: CLLocationCoordinate2D(latitude: -6.29816, longitude: 106.70786),
+                end: CLLocationCoordinate2D(latitude: -6.29894, longitude: 106.69725)
+            )
+        case "pagedangan-alam-sutera":
+            return (
+                start: CLLocationCoordinate2D(latitude: -6.30331, longitude: 106.69954),
+                end: CLLocationCoordinate2D(latitude: -6.29894, longitude: 106.69725)
+            )
+        case "pagedangan-pamulang":
+            return (
+                start: CLLocationCoordinate2D(latitude: -6.30338, longitude: 106.69960),
+                end: CLLocationCoordinate2D(latitude: -6.30310, longitude: 106.70402)
+            )
+        case "pamulang-pagedangan":
+            return (
+                start: CLLocationCoordinate2D(latitude: -6.30564, longitude: 106.70574),
+                end: CLLocationCoordinate2D(latitude: -6.30724, longitude: 106.69257)
+            )
+        case "pamulang-jakarta":
+            return (
+                start: CLLocationCoordinate2D(latitude: -6.30290, longitude: 106.70340),
+                end: CLLocationCoordinate2D(latitude: -6.29853, longitude: 106.70694)
+            )
+        case "alam-sutera-pagedangan":
+            return (
+                start: CLLocationCoordinate2D(latitude: -6.30026, longitude: 106.70040),
+                end: CLLocationCoordinate2D(latitude: -6.30380, longitude: 106.69977)
+            )
+        case "alam-sutera-jakarta":
+            return (
+                start: CLLocationCoordinate2D(latitude: -6.29989, longitude: 106.69956),
+                end: CLLocationCoordinate2D(latitude: -6.29917, longitude: 106.70617)
+            )
+        default:
+            // Default to Jakarta - Alam Sutera coordinates
+            return (
+                start: CLLocationCoordinate2D(latitude: -6.29816, longitude: 106.70786),
+                end: CLLocationCoordinate2D(latitude: -6.29894, longitude: 106.69725)
+            )
+        }
+    }
+    
+    // Helper function to generate traffic segments for a selected route
+    static func getTrafficSegmentsForRoute(_ route: RouteOption) -> [TrafficSegment] {
+        let coordinates = getRouteCoordinates(for: route)
+        
+        // Get sample traffic data for this route if available
+        let routeTrafficData = sampleHourlyData.filter { $0.route == route.name }
+        let averageTraffic = routeTrafficData.isEmpty ? 3500 : 
+            Double(routeTrafficData.map { $0.totalVehicles }.reduce(0, +)) / Double(routeTrafficData.count)
+        
+        // Create a single traffic segment for the route
+        return [TrafficSegment(
+            start: coordinates.start,
+            end: coordinates.end,
+            weight: averageTraffic
+        )]
+    }
+    
     // Helper function to get data for a specific route
     static func getDataForRoute(_ route: RouteOption, data: MonthlyVehicleData) -> Int {
         switch route.name {
@@ -136,16 +220,74 @@ struct TrafficDataService {
         }
     }
     
-    // Helper function to get color for route
+    // Helper function to get color for route using specific color assets
     static func colorForRoute(_ route: RouteOption) -> Color {
-        let colors = [
-            Color("ColorBluePrimary"),
-            Color("ColorBlueSecondary"),
-            Color("ColorGrayPrimary"),
-            Color("ColorRedPrimary"),
-            Color("ColorRedSecondary")
-        ]
-        let index = RouteOption.allRoutes.firstIndex(of: route) ?? 0
-        return colors[index % colors.count]
+        switch route.name {
+        case "jakarta-pagedangan":
+            return Color("RouteJakartaPagedangan")
+        case "bintaro-out":
+            return Color("RouteBintaroOut")
+        case "bintaro-in":
+            return Color("RouteBintaroln")
+        case "jakarta-pamulang":
+            return Color("RouteJakartaPamulang")
+        case "jakarta-alam-sutera":
+            return Color("RouteJakartaAlamSutera")
+        case "pagedangan-alam-sutera":
+            return Color("RoutePagedanganAlamSutera")
+        case "pagedangan-pamulang":
+            return Color("RoutePagedanganPamulang")
+        case "pamulang-pagedangan":
+            return Color("RoutePamulangPagedangan")
+        case "pamulang-jakarta":
+            return Color("RoutePamulangJakarta")
+        case "alam-sutera-jakarta":
+            return Color("RouteJakartaAlamSutera") // Reuse existing
+        case "alam-sutera-pagedangan":
+            return Color("RouteAlamSuteraPagedangan")
+        default:
+            return Color("ColorBluePrimary") // Fallback
+        }
+    }
+    
+    // Helper function to get heatmap color based on vehicle count with gradient
+    static func heatmapColorForVehicleCount(_ vehicleCount: Double) -> Color {
+        let greenThreshold: Double = 2850
+        let yellowThreshold: Double = 3990
+        let redThreshold: Double = 5700
+        
+        // Define the key colors
+        let greenColor = Color(red: 0x00/255.0, green: 0xFC/255.0, blue: 0x33/255.0) // #00FC33
+        let yellowColor = Color(red: 0xF2/255.0, green: 0xFE/255.0, blue: 0x06/255.0) // #F2FE06
+        let redColor = Color(red: 0xF9/255.0, green: 0x05/255.0, blue: 0x01/255.0) // #F90501
+        
+        if vehicleCount <= greenThreshold {
+            return greenColor
+        } else if vehicleCount <= yellowThreshold {
+            // Interpolate between green and yellow
+            let ratio = (vehicleCount - greenThreshold) / (yellowThreshold - greenThreshold)
+            return interpolateColor(from: greenColor, to: yellowColor, ratio: ratio)
+        } else if vehicleCount <= redThreshold {
+            // Interpolate between yellow and red
+            let ratio = (vehicleCount - yellowThreshold) / (redThreshold - yellowThreshold)
+            return interpolateColor(from: yellowColor, to: redColor, ratio: ratio)
+        } else {
+            return redColor
+        }
+    }
+    
+    // Helper function to interpolate between two colors
+    private static func interpolateColor(from startColor: Color, to endColor: Color, ratio: Double) -> Color {
+        let clampedRatio = max(0, min(1, ratio))
+        
+        // Convert colors to RGB components for interpolation
+        let startComponents = startColor.cgColor?.components ?? [0, 0, 0, 1]
+        let endComponents = endColor.cgColor?.components ?? [0, 0, 0, 1]
+        
+        let r = startComponents[0] + (endComponents[0] - startComponents[0]) * clampedRatio
+        let g = startComponents[1] + (endComponents[1] - startComponents[1]) * clampedRatio
+        let b = startComponents[2] + (endComponents[2] - startComponents[2]) * clampedRatio
+        
+        return Color(red: r, green: g, blue: b)
     }
 } 

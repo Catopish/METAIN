@@ -2,7 +2,6 @@ import SwiftUI
 import MapKit
 import AppKit
 
-// MARK: - macOS Map Wrapper
 struct TrafficMapView: NSViewRepresentable {
     let segments: [TrafficSegment]
     @Binding var region: MKCoordinateRegion
@@ -59,16 +58,25 @@ struct TrafficMapView: NSViewRepresentable {
             }
             
             let renderer = MKPolylineRenderer(overlay: poly)
-            // normalize weight to 0...1
-            let t = min(max((weight - 0) / 200, 0), 1)
-            renderer.strokeColor = NSColor(
-                red:   CGFloat(t),
-                green: CGFloat(1 - t),
-                blue:  0,
-                alpha: 0.8
-            )
-            renderer.lineWidth = CGFloat(4 + (weight / 100))
+            
+            // Use the new gradient color system based on vehicle count
+            let color = TrafficDataService.heatmapColorForVehicleCount(weight)
+            
+            // Convert SwiftUI Color to NSColor
+            if let cgColor = color.cgColor {
+                renderer.strokeColor = NSColor(cgColor: cgColor)
+            } else {
+                // Fallback to default color
+                renderer.strokeColor = NSColor.systemBlue
+            }
+            
+            // Line width based on traffic intensity
+            let baseWidth: CGFloat = 4
+            let intensityFactor = CGFloat(weight / 1000) // Scale based on thousands
+            renderer.lineWidth = max(baseWidth, baseWidth + intensityFactor)
             renderer.lineCap = .round
+            renderer.alpha = 0.8
+            
             return renderer
         }
     }
