@@ -9,28 +9,32 @@ struct VehicleCountCardsView: View {
             // Vehicle cards
             HStack(spacing: 20) {
                 ForEach(vehicleData, id: \.type) { data in
-                    VStack(alignment: .center, spacing: 12) {
+                    HStack(spacing: 16) {
+                        // Icon on the left
                         Image(data.iconName)
                             .resizable()
                             .scaledToFit()
                             .frame(width: 60, height: 60)
                         
-                        VStack(spacing: 4) {
+                        // Text information on the right
+                        VStack(alignment: .leading, spacing: 4) {
                             Text(data.type)
                                 .font(.system(size: 14, weight: .medium))
                                 .foregroundColor(Color("ColorBluePrimary"))
                             
                             Text("\(Int(data.count).formatted())")
                                 .font(.system(size: 28, weight: .bold))
-                                .foregroundColor(data.color)
+                                .foregroundColor(Color("ColorBluePrimary")) // Use consistent color for all
                             
                             // Show percentage for individual route selection
                             if selectedRoute.name != "all-routes" {
                                 Text("\(data.percentage, specifier: "%.1f")%")
-                                    .font(.system(size: 10, weight: .medium))
+                                    .font(.system(size: 16, weight: .medium))
                                     .foregroundColor(.secondary)
                             }
                         }
+                        
+                        Spacer()
                     }
                     .frame(maxWidth: .infinity)
                     .padding(20)

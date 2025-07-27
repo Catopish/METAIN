@@ -78,8 +78,8 @@ struct TrafficDataService {
     
     static let sampleVehicleData = [
         VehicleAnalytics(type: "Car", count: 2116, percentage: 40.7, color: Color("ColorBluePrimary"), iconName: "CarCardIcon"),
-        VehicleAnalytics(type: "Bus", count: 500, percentage: 33.3, color: Color("ColorBlueSecondary"), iconName: "BusCardIcon"),
-        VehicleAnalytics(type: "Truck", count: 500, percentage: 26.0, color: Color("ColorGrayPrimary"), iconName: "TruckCardIcon")
+        VehicleAnalytics(type: "Bus", count: 500, percentage: 33.3, color: Color("ColorBluePrimary"), iconName: "BusCardIcon"),
+        VehicleAnalytics(type: "Truck", count: 500, percentage: 26.0, color: Color("ColorBluePrimary"), iconName: "TruckCardIcon")
     ]
     
     static let sampleMonthlyData = [
@@ -284,14 +284,14 @@ struct TrafficDataService {
                     type: "Bus", 
                     count: Double(totalBuses), 
                     percentage: grandTotal > 0 ? Double(totalBuses) / Double(grandTotal) * 100 : 0,
-                    color: Color("ColorBlueSecondary"), 
+                    color: Color("ColorBluePrimary"),
                     iconName: "BusCardIcon"
                 ),
                 VehicleAnalytics(
                     type: "Truck", 
                     count: Double(totalTrucks), 
                     percentage: grandTotal > 0 ? Double(totalTrucks) / Double(grandTotal) * 100 : 0,
-                    color: Color("ColorGrayPrimary"), 
+                    color: Color("ColorBluePrimary"), 
                     iconName: "TruckCardIcon"
                 )
             ]
@@ -312,14 +312,14 @@ struct TrafficDataService {
                         type: "Bus", 
                         count: Double(data.busCount), 
                         percentage: total > 0 ? Double(data.busCount) / Double(total) * 100 : 0,
-                        color: Color("ColorBlueSecondary"), 
+                        color: Color("ColorBluePrimary"), 
                         iconName: "BusCardIcon"
                     ),
                     VehicleAnalytics(
                         type: "Truck", 
                         count: Double(data.truckCount), 
                         percentage: total > 0 ? Double(data.truckCount) / Double(total) * 100 : 0,
-                        color: Color("ColorGrayPrimary"), 
+                        color: Color("ColorBluePrimary"), 
                         iconName: "TruckCardIcon"
                     )
                 ]
