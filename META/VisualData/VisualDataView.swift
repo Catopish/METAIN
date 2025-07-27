@@ -2,26 +2,31 @@ import SwiftUI
 import MapKit
 
 struct VisualDataView: View {
-    // Heatmap filters
-    @State private var selectedRoute = RouteOption.allRoutes[4] // Jakarta - Alam Sutera as default
+    // Heatmap filters - Default to "All Routes"
+    @State private var selectedRoute = RouteOption.allRoutes[0] // All Routes as default
     
     // Dynamic region based on selected route
     @State private var region: MKCoordinateRegion = {
-        let defaultRoute = RouteOption.allRoutes[4] // Jakarta - Alam Sutera
-        let coordinates = TrafficDataService.getRouteCoordinates(for: defaultRoute)
-        let centerLat = (coordinates.start.latitude + coordinates.end.latitude) / 2
-        let centerLon = (coordinates.start.longitude + coordinates.end.longitude) / 2
+        let defaultRoute = RouteOption.allRoutes[0] // All Routes
         
         return MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon),
-            span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+            center: TrafficDataService.getCenterCoordinate(for: defaultRoute),
+            span: TrafficDataService.getZoomLevel(for: defaultRoute)
         )
     }()
+    
+    // Selected time range for vehicle data
+    @State private var selectedTimeRange = "00.00 - 01.00"
     
     // Comparison filters
     @State private var selectedYear = 2025
     @State private var selectedMonth = "All Months"
-    @State private var selectedRoutes: Set<RouteOption> = [RouteOption.allRoutes[4], RouteOption.allRoutes[1]] // Default selections
+    @State private var selectedRoutes: Set<RouteOption> = [RouteOption.allRoutes[5], RouteOption.allRoutes[2]] // Default selections (jakarta-alam-sutera, bintaro-out)
+    
+    // Computed property for dynamic vehicle data
+    private var dynamicVehicleData: [VehicleAnalytics] {
+        TrafficDataService.getVehicleDataForRoute(selectedRoute, timeRange: selectedTimeRange)
+    }
     
     var body: some View {
         ScrollView {
@@ -32,8 +37,11 @@ struct VisualDataView: View {
                     region: $region
                 )
                 
-                // Vehicle Count Cards
-                VehicleCountCardsView(vehicleData: TrafficDataService.sampleVehicleData)
+                // Vehicle Count Cards - Now dynamic based on selected route
+                VehicleCountCardsView(
+                    vehicleData: dynamicVehicleData,
+                    selectedRoute: selectedRoute
+                )
                 
                 // Comparison Section
                 ComparisonSectionView(

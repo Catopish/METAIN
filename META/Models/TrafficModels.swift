@@ -8,7 +8,9 @@ struct RouteOption: Identifiable, Equatable, Hashable {
     let displayName: String
     
     static let allRoutes: [RouteOption] = [
+        RouteOption(name: "all-routes", displayName: "All Routes"),
         RouteOption(name: "jakarta-pagedangan", displayName: "Jakarta - Pagedangan"),
+        RouteOption(name: "pagedangan-jakarta", displayName: "Pagedangan - Jakarta"),
         RouteOption(name: "bintaro-out", displayName: "Bintaro Out"),
         RouteOption(name: "bintaro-in", displayName: "Bintaro In"),
         RouteOption(name: "jakarta-pamulang", displayName: "Jakarta - Pamulang"),
@@ -26,6 +28,7 @@ struct TrafficSegment {
     let start: CLLocationCoordinate2D
     let end: CLLocationCoordinate2D
     let weight: Double   // vehicles per hour for heatmap weighting
+    let routeName: String // Add route name for identification
 }
 
 // MARK: - Traffic Data Models (Based on Excel Structure)
@@ -64,13 +67,13 @@ struct TrafficDataService {
     static let sampleTrafficSegments: [TrafficSegment] = [
         .init(start: CLLocationCoordinate2D(latitude: -6.30497, longitude: 106.64173),
               end:   CLLocationCoordinate2D(latitude: -6.30617, longitude: 106.64455),
-              weight: 2850), // Green level
+              weight: 2850, routeName: "sample"), // Green level
         .init(start: CLLocationCoordinate2D(latitude: -6.30617, longitude: 106.64455),
               end:   CLLocationCoordinate2D(latitude: -6.30397, longitude: 106.65769),
-              weight: 3990), // Yellow level
+              weight: 3990, routeName: "sample"), // Yellow level
         .init(start: CLLocationCoordinate2D(latitude: -6.30397, longitude: 106.65769),
               end:   CLLocationCoordinate2D(latitude: -6.30293, longitude: 106.66266),
-              weight: 5700)  // Red level
+              weight: 5700, routeName: "sample")  // Red level
     ]
     
     static let sampleVehicleData = [
@@ -94,33 +97,35 @@ struct TrafficDataService {
         MonthlyVehicleData(month: "Dec", bintaraOut: 11000, jakartaAlamSutera: 4200)
     ]
     
-    // Sample hourly data based on Excel structure
+    // Sample hourly data based on Excel structure - Updated with realistic traffic volumes for color differentiation
     static let sampleHourlyData: [HourlyTrafficData] = [
-        // 00:00 - 01:00
-        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "jakarta-pagedangan", carCount: 159, busCount: 59, truckCount: 102),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "bintaro-out", carCount: 80, busCount: 84, truckCount: 99),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "bintaro-in", carCount: 118, busCount: 116, truckCount: 41),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "jakarta-pamulang", carCount: 180, busCount: 116, truckCount: 48),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "jakarta-alam-sutera", carCount: 165, busCount: 155, truckCount: 32),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "pagedangan-alam-sutera", carCount: 175, busCount: 37, truckCount: 179),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "pagedangan-pamulang", carCount: 102, busCount: 48, truckCount: 32),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "pamulang-pagedangan", carCount: 147, busCount: 134, truckCount: 47),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "pamulang-jakarta", carCount: 83, busCount: 49, truckCount: 41),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "alam-sutera-jakarta", carCount: 142, busCount: 130, truckCount: 40),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "alam-sutera-pagedangan", carCount: 84, busCount: 80, truckCount: 33),
+        // 00:00 - 01:00 - Scaled up for realistic hourly rates
+        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "jakarta-pagedangan", carCount: 1590, busCount: 590, truckCount: 1020), // Total: 3200 (Yellow)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "pagedangan-jakarta", carCount: 2130, busCount: 1005, truckCount: 1335), // Total: 4470 (Red)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "bintaro-out", carCount: 1600, busCount: 840, truckCount: 990), // Total: 3430 (Yellow)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "bintaro-in", carCount: 1180, busCount: 1160, truckCount: 410), // Total: 2750 (Green)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "jakarta-pamulang", carCount: 3600, busCount: 1740, truckCount: 720), // Total: 6060 (Red)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "jakarta-alam-sutera", carCount: 1650, busCount: 1550, truckCount: 320), // Total: 3520 (Yellow)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "pagedangan-alam-sutera", carCount: 1050, busCount: 370, truckCount: 1070), // Total: 2490 (Green)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "pagedangan-pamulang", carCount: 2040, busCount: 960, truckCount: 640), // Total: 3640 (Yellow)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "pamulang-pagedangan", carCount: 2205, busCount: 2010, truckCount: 705), // Total: 4920 (Red)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "pamulang-jakarta", carCount: 1245, busCount: 735, truckCount: 615), // Total: 2595 (Green)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "alam-sutera-jakarta", carCount: 2130, busCount: 1950, truckCount: 600), // Total: 4680 (Red)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "00.00 - 01.00", route: "alam-sutera-pagedangan", carCount: 1260, busCount: 1200, truckCount: 495), // Total: 2955 (Yellow)
         
-        // 01:00 - 02:00
-        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "jakarta-pagedangan", carCount: 82, busCount: 48, truckCount: 47),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "bintaro-out", carCount: 170, busCount: 112, truckCount: 47),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "bintaro-in", carCount: 118, busCount: 49, truckCount: 46),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "jakarta-pamulang", carCount: 178, busCount: 147, truckCount: 33),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "jakarta-alam-sutera", carCount: 167, busCount: 59, truckCount: 35),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "pagedangan-alam-sutera", carCount: 99, busCount: 32, truckCount: 33),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "pagedangan-pamulang", carCount: 155, busCount: 43, truckCount: 119),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "pamulang-pagedangan", carCount: 177, busCount: 123, truckCount: 50),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "pamulang-jakarta", carCount: 167, busCount: 72, truckCount: 48),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "alam-sutera-jakarta", carCount: 83, busCount: 50, truckCount: 49),
-        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "alam-sutera-pagedangan", carCount: 98, busCount: 83, truckCount: 35)
+        // 01:00 - 02:00 - Different traffic patterns for variety
+        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "jakarta-pagedangan", carCount: 1230, busCount: 720, truckCount: 705), // Total: 2655 (Green)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "pagedangan-jakarta", carCount: 1425, busCount: 780, truckCount: 915), // Total: 3120 (Yellow)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "bintaro-out", carCount: 2550, busCount: 1680, truckCount: 705), // Total: 4935 (Red)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "bintaro-in", carCount: 1770, busCount: 735, truckCount: 690), // Total: 3195 (Yellow)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "jakarta-pamulang", carCount: 2670, busCount: 2205, truckCount: 495), // Total: 5370 (Red)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "jakarta-alam-sutera", carCount: 2505, busCount: 885, truckCount: 525), // Total: 3915 (Yellow)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "pagedangan-alam-sutera", carCount: 1485, busCount: 480, truckCount: 495), // Total: 2460 (Green)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "pagedangan-pamulang", carCount: 2325, busCount: 645, truckCount: 1785), // Total: 4755 (Red)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "pamulang-pagedangan", carCount: 2655, busCount: 1845, truckCount: 750), // Total: 5250 (Red)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "pamulang-jakarta", carCount: 2505, busCount: 1080, truckCount: 720), // Total: 4305 (Red)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "alam-sutera-jakarta", carCount: 1245, busCount: 750, truckCount: 735), // Total: 2730 (Green)
+        HourlyTrafficData(date: "1 July 2025", timeRange: "01.00 - 02.00", route: "alam-sutera-pagedangan", carCount: 1470, busCount: 1245, truckCount: 525) // Total: 3240 (Yellow)
     ]
     
     // Helper function to get route coordinates based on the provided data
@@ -130,6 +135,11 @@ struct TrafficDataService {
             return (
                 start: CLLocationCoordinate2D(latitude: -6.28572, longitude: 106.73091),
                 end: CLLocationCoordinate2D(latitude: -6.30782, longitude: 106.69069)
+            )
+        case "pagedangan-jakarta":
+            return (
+                start: CLLocationCoordinate2D(latitude: -6.30482, longitude: 106.69713),
+                end: CLLocationCoordinate2D(latitude: -6.28477, longitude: 106.73216)
             )
         case "bintaro-out":
             return (
@@ -192,19 +202,145 @@ struct TrafficDataService {
     
     // Helper function to generate traffic segments for a selected route
     static func getTrafficSegmentsForRoute(_ route: RouteOption) -> [TrafficSegment] {
-        let coordinates = getRouteCoordinates(for: route)
+        if route.name == "all-routes" {
+            // Return segments for all routes
+            var allSegments: [TrafficSegment] = []
+            for routeOption in RouteOption.allRoutes {
+                if routeOption.name != "all-routes" {
+                    let coordinates = getRouteCoordinates(for: routeOption)
+                    let routeTrafficData = sampleHourlyData.filter { $0.route == routeOption.name }
+                    let averageTraffic = routeTrafficData.isEmpty ? 3500 : 
+                        Double(routeTrafficData.map { $0.totalVehicles }.reduce(0, +)) / Double(routeTrafficData.count)
+                    
+                    allSegments.append(TrafficSegment(
+                        start: coordinates.start,
+                        end: coordinates.end,
+                        weight: averageTraffic,
+                        routeName: routeOption.name
+                    ))
+                }
+            }
+            return allSegments
+        } else {
+            // Return segment for specific route
+            let coordinates = getRouteCoordinates(for: route)
+            let routeTrafficData = sampleHourlyData.filter { $0.route == route.name }
+            let averageTraffic = routeTrafficData.isEmpty ? 3500 : 
+                Double(routeTrafficData.map { $0.totalVehicles }.reduce(0, +)) / Double(routeTrafficData.count)
+            
+            return [TrafficSegment(
+                start: coordinates.start,
+                end: coordinates.end,
+                weight: averageTraffic,
+                routeName: route.name
+            )]
+        }
+    }
+    
+    // Helper function to determine appropriate zoom level
+    static func getZoomLevel(for route: RouteOption) -> MKCoordinateSpan {
+        switch route.name {
+        case "all-routes", "jakarta-pagedangan", "pagedangan-jakarta":
+            // Reduced zoom scale (was 0.08, now 0.05 for better visibility)
+            return MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+        default:
+            // Normal zoom for shorter routes
+            return MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+        }
+    }
+    
+    // Helper function to get center coordinate for route or all routes
+    static func getCenterCoordinate(for route: RouteOption) -> CLLocationCoordinate2D {
+        if route.name == "all-routes" {
+            // Center on overall area covering all routes
+            return CLLocationCoordinate2D(latitude: -6.295, longitude: 106.71)
+        } else {
+            let coordinates = getRouteCoordinates(for: route)
+            let centerLat = (coordinates.start.latitude + coordinates.end.latitude) / 2
+            let centerLon = (coordinates.start.longitude + coordinates.end.longitude) / 2
+            return CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon)
+        }
+    }
+    
+    // Helper function to get vehicle data for selected route
+    static func getVehicleDataForRoute(_ route: RouteOption, timeRange: String = "00.00 - 01.00") -> [VehicleAnalytics] {
+        if route.name == "all-routes" {
+            // Calculate totals for all routes
+            let allRouteData = sampleHourlyData.filter { $0.timeRange == timeRange }
+            let totalCars = allRouteData.map { $0.carCount }.reduce(0, +)
+            let totalBuses = allRouteData.map { $0.busCount }.reduce(0, +)
+            let totalTrucks = allRouteData.map { $0.truckCount }.reduce(0, +)
+            let grandTotal = totalCars + totalBuses + totalTrucks
+            
+            return [
+                VehicleAnalytics(
+                    type: "Car", 
+                    count: Double(totalCars), 
+                    percentage: grandTotal > 0 ? Double(totalCars) / Double(grandTotal) * 100 : 0,
+                    color: Color("ColorBluePrimary"), 
+                    iconName: "CarCardIcon"
+                ),
+                VehicleAnalytics(
+                    type: "Bus", 
+                    count: Double(totalBuses), 
+                    percentage: grandTotal > 0 ? Double(totalBuses) / Double(grandTotal) * 100 : 0,
+                    color: Color("ColorBlueSecondary"), 
+                    iconName: "BusCardIcon"
+                ),
+                VehicleAnalytics(
+                    type: "Truck", 
+                    count: Double(totalTrucks), 
+                    percentage: grandTotal > 0 ? Double(totalTrucks) / Double(grandTotal) * 100 : 0,
+                    color: Color("ColorGrayPrimary"), 
+                    iconName: "TruckCardIcon"
+                )
+            ]
+        } else {
+            // Get data for specific route
+            let routeData = sampleHourlyData.filter { $0.route == route.name && $0.timeRange == timeRange }
+            if let data = routeData.first {
+                let total = data.totalVehicles
+                return [
+                    VehicleAnalytics(
+                        type: "Car", 
+                        count: Double(data.carCount), 
+                        percentage: total > 0 ? Double(data.carCount) / Double(total) * 100 : 0,
+                        color: Color("ColorBluePrimary"), 
+                        iconName: "CarCardIcon"
+                    ),
+                    VehicleAnalytics(
+                        type: "Bus", 
+                        count: Double(data.busCount), 
+                        percentage: total > 0 ? Double(data.busCount) / Double(total) * 100 : 0,
+                        color: Color("ColorBlueSecondary"), 
+                        iconName: "BusCardIcon"
+                    ),
+                    VehicleAnalytics(
+                        type: "Truck", 
+                        count: Double(data.truckCount), 
+                        percentage: total > 0 ? Double(data.truckCount) / Double(total) * 100 : 0,
+                        color: Color("ColorGrayPrimary"), 
+                        iconName: "TruckCardIcon"
+                    )
+                ]
+            } else {
+                // Return default data if no specific data found
+                return sampleVehicleData
+            }
+        }
+    }
+    
+    // Helper function to get total traffic and percentage for a specific route
+    static func getRouteTrafficInfo(_ route: RouteOption, timeRange: String = "00.00 - 01.00") -> (total: Int, percentage: Double) {
+        let allRouteData = sampleHourlyData.filter { $0.timeRange == timeRange }
+        let grandTotal = allRouteData.map { $0.totalVehicles }.reduce(0, +)
         
-        // Get sample traffic data for this route if available
-        let routeTrafficData = sampleHourlyData.filter { $0.route == route.name }
-        let averageTraffic = routeTrafficData.isEmpty ? 3500 : 
-            Double(routeTrafficData.map { $0.totalVehicles }.reduce(0, +)) / Double(routeTrafficData.count)
+        let routeData = sampleHourlyData.filter { $0.route == route.name && $0.timeRange == timeRange }
+        let routeTotal = routeData.first?.totalVehicles ?? 0
         
-        // Create a single traffic segment for the route
-        return [TrafficSegment(
-            start: coordinates.start,
-            end: coordinates.end,
-            weight: averageTraffic
-        )]
+        let percentage = grandTotal > 0 ? Double(routeTotal) / Double(grandTotal) * 100 : 0
+        
+        return (total: routeTotal, percentage: percentage)
     }
     
     // Helper function to get data for a specific route
@@ -225,6 +361,8 @@ struct TrafficDataService {
         switch route.name {
         case "jakarta-pagedangan":
             return Color("RouteJakartaPagedangan")
+        case "pagedangan-jakarta":
+            return Color("RouteJakartaPagedangan") // Use same color as Jakarta-Pagedangan
         case "bintaro-out":
             return Color("RouteBintaroOut")
         case "bintaro-in":

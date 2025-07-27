@@ -25,14 +25,10 @@ struct HeatmapSectionView: View {
                         Button(route.displayName) {
                             selectedRoute = route
                             
-                            // Update map region to focus on the selected route
-                            let coordinates = TrafficDataService.getRouteCoordinates(for: route)
-                            let centerLat = (coordinates.start.latitude + coordinates.end.latitude) / 2
-                            let centerLon = (coordinates.start.longitude + coordinates.end.longitude) / 2
-                            
+                            // Update map region to focus on the selected route using helper functions
                             region = MKCoordinateRegion(
-                                center: CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon),
-                                span: MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+                                center: TrafficDataService.getCenterCoordinate(for: route),
+                                span: TrafficDataService.getZoomLevel(for: route)
                             )
                         }
                     }
@@ -70,11 +66,15 @@ struct HeatmapSectionView: View {
             
             // Map - with lower z-index
             VStack(spacing: 0) {
-                TrafficMapView(segments: dynamicTrafficSegments, region: $region)
-                    .frame(height: 400)
-                    .cornerRadius(12)
-                    .shadow(radius: 4)
-                    .zIndex(1) // Lower z-index than date filter
+                TrafficMapViewWithOverlay(
+                    segments: dynamicTrafficSegments, 
+                    region: $region,
+                    selectedRoute: selectedRoute
+                )
+                .frame(height: 400)
+                .cornerRadius(12)
+                .shadow(radius: 4)
+                .zIndex(1) // Lower z-index than date filter
                 
                 // Traffic intensity legend
                 HStack(spacing: 0) {

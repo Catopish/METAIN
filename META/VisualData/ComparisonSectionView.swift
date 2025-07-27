@@ -11,7 +11,7 @@ struct ComparisonSectionView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Comparison of vehicle volumes")
+            Text("Comparison Of Vehicle Volumes")
                 .font(.system(size: 20, weight: .semibold))
                 .foregroundColor(Color("ColorBluePrimary"))
             
