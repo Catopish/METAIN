@@ -464,4 +464,8 @@ struct TrafficDataService {
         
         return Color(red: r, green: g, blue: b)
     }
-} 
+    
+    static func getRawData() -> [HourlyTrafficData]{
+        return sampleHourlyData
+    }
+}
