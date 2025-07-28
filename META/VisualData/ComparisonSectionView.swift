@@ -7,7 +7,17 @@ struct ComparisonSectionView: View {
     
     let years = Array(2015...2025)
     let months = ["All Months", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-    let monthlyData: [MonthlyVehicleData]
+    
+    // Remove old monthlyData parameter since we generate it dynamically now
+    
+    // Computed properties for chart data
+    private var chartData: [RouteChartData] {
+        TrafficDataService.getChartData(for: selectedRoutes, year: selectedYear, month: selectedMonth)
+    }
+    
+    private var isShowingDailyView: Bool {
+        selectedMonth != "All Months"
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -19,13 +29,13 @@ struct ComparisonSectionView: View {
                 // Year Dropdown - with calendar icon
                 Menu {
                     ForEach(years, id: \.self) { year in
-                        Button("\(year)") {
+                        Button(String(year)) {
                             selectedYear = year
                         }
                     }
                 } label: {
                     HStack {
-                        Text("\(selectedYear)")
+                        Text(String(selectedYear))
                             .foregroundColor(.primary)
                         
                         Spacer()
@@ -131,8 +141,11 @@ struct ComparisonSectionView: View {
                 Spacer()
             }
             
-            // Chart
-            ComparisonChartView(selectedRoutes: selectedRoutes, monthlyData: monthlyData)
+            // Enhanced Chart with new data structure
+            ComparisonChartView(
+                chartData: chartData,
+                isShowingDays: isShowingDailyView
+            )
             
             // Legend - Dynamic based on selected routes
             VStack(alignment: .leading, spacing: 8) {

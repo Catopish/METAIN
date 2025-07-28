@@ -8,8 +8,8 @@ import SwiftUI
 import SwiftData
 
 enum SidebarItem: String, CaseIterable, Identifiable {
-    case visualData = "Visual Data"
-    case rawData = "Raw Data"
+    case visualData = "Analytics"
+    case rawData = "Records"
 
     var id: String { rawValue }
     var systemIcon: String {

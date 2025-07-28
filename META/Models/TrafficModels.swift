@@ -61,6 +61,27 @@ struct MonthlyVehicleData {
     let jakartaAlamSutera: Int
 }
 
+// MARK: - Enhanced Chart Data Models
+struct ChartDataPoint: Identifiable {
+    let id = UUID()
+    let label: String // "Jan" or "1", "2", "3" for days
+    let value: Int
+    let carCount: Int
+    let busCount: Int
+    let truckCount: Int
+    
+    var breakdown: String {
+        "\(value.formatted()) total • \(carCount.formatted()) Car • \(busCount.formatted()) Bus • \(truckCount.formatted()) Truck"
+    }
+}
+
+struct RouteChartData: Identifiable {
+    let id = UUID()
+    let route: RouteOption
+    let dataPoints: [ChartDataPoint]
+    let color: Color
+}
+
 // MARK: - Sample Data
 struct TrafficDataService {
     
@@ -467,5 +488,99 @@ struct TrafficDataService {
     
     static func getRawData() -> [HourlyTrafficData]{
         return sampleHourlyData
+    }
+
+    // MARK: - Enhanced Chart Data Generation
+    static func getChartData(for routes: Set<RouteOption>, year: Int, month: String) -> [RouteChartData] {
+        var chartData: [RouteChartData] = []
+        
+        for route in routes {
+            if month == "All Months" {
+                // Generate monthly data (12 points)
+                let dataPoints = sampleMonthlyData.map { monthData in
+                    let baseValue = getDataForRoute(route, data: monthData)
+                    let carCount = Int(Double(baseValue) * 0.45) // ~45% cars
+                    let busCount = Int(Double(baseValue) * 0.25) // ~25% buses
+                    let truckCount = baseValue - carCount - busCount // remaining trucks
+                    
+                    return ChartDataPoint(
+                        label: monthData.month,
+                        value: baseValue,
+                        carCount: carCount,
+                        busCount: busCount,
+                        truckCount: truckCount
+                    )
+                }
+                
+                chartData.append(RouteChartData(
+                    route: route,
+                    dataPoints: dataPoints,
+                    color: colorForRoute(route)
+                ))
+            } else {
+                // Generate daily data for specific month (varying days based on month)
+                let daysInMonth = getDaysInMonth(month: month, year: year)
+                let dataPoints = (1...daysInMonth).map { day in
+                    let baseValue = generateDailyValue(for: route, month: month, day: day)
+                    let carCount = Int(Double(baseValue) * 0.45)
+                    let busCount = Int(Double(baseValue) * 0.25)
+                    let truckCount = baseValue - carCount - busCount
+                    
+                    return ChartDataPoint(
+                        label: "\(day)",
+                        value: baseValue,
+                        carCount: carCount,
+                        busCount: busCount,
+                        truckCount: truckCount
+                    )
+                }
+                
+                chartData.append(RouteChartData(
+                    route: route,
+                    dataPoints: dataPoints,
+                    color: colorForRoute(route)
+                ))
+            }
+        }
+        
+        return chartData
+    }
+    
+    private static func getDaysInMonth(month: String, year: Int) -> Int {
+        let monthIndex = ["January": 1, "February": 2, "March": 3, "April": 4,
+                         "May": 5, "June": 6, "July": 7, "August": 8,
+                         "September": 9, "October": 10, "November": 11, "December": 12]
+        
+        guard let monthNum = monthIndex[month] else { return 31 }
+        
+        let calendar = Calendar.current
+        let dateComponents = DateComponents(year: year, month: monthNum)
+        let date = calendar.date(from: dateComponents)!
+        let range = calendar.range(of: .day, in: .month, for: date)!
+        return range.count
+    }
+    
+    private static func generateDailyValue(for route: RouteOption, month: String, day: Int) -> Int {
+        // Generate realistic daily variations for each route
+        let monthIndex = ["January": 1, "February": 2, "March": 3, "April": 4,
+                         "May": 5, "June": 6, "July": 7, "August": 8,
+                         "September": 9, "October": 10, "November": 11, "December": 12]
+        
+        guard let monthNum = monthIndex[month] else { return 5000 }
+        
+        // Use month data as baseline and add daily variation
+        let monthlyData = sampleMonthlyData[monthNum - 1]
+        let baseValue = getDataForRoute(route, data: monthlyData)
+        
+        // Add realistic daily patterns (weekends lower, mid-week higher)
+        let dayOfWeek = (day % 7) + 1 // Simulate day of week
+        let weekendMultiplier = (dayOfWeek == 1 || dayOfWeek == 7) ? 0.7 : 1.0 // Weekend reduction
+        let midWeekBoost = (dayOfWeek >= 3 && dayOfWeek <= 5) ? 1.2 : 1.0 // Mid-week boost
+        
+        // Add some randomness for realistic variation
+        let randomVariation = Double.random(in: 0.8...1.2)
+        
+        let dailyValue = Double(baseValue) * weekendMultiplier * midWeekBoost * randomVariation
+        return max(Int(dailyValue), 1000) // Minimum of 1000 vehicles
     }
 }
