@@ -22,7 +22,7 @@ jobs:
       - name: Build (skip code signing, target 15.2)
         run: |
           xcodebuild clean build \
-            -scheme MachineLearningChallenge \
+            -scheme META \
             -destination 'platform=macOS' \
             MACOSX_DEPLOYMENT_TARGET=15.2 \
             CODE_SIGN_IDENTITY="" \
