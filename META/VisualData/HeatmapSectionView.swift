@@ -27,10 +27,14 @@ struct HeatmapSectionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Title
-            Text("Heatmap")
-                .font(.system(size: 20, weight: .semibold))
-                .foregroundColor(Color("ColorBluePrimary"))
-            
+            VStack (alignment: .leading, spacing: 8){
+                Text("Vehicle Volume Interactive Heatmap")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(Color("ColorBluePrimary"))
+                Text("Select route on the map to see it specific traffic volume.")
+                    .font(.system(size: 14, weight: .light))
+                    .foregroundColor(.secondary)
+            }
             // Filters row - positioned below title
             HStack(spacing: 16) {
                 // Route Dropdown - exact same style as DateFilterWithCalendar
