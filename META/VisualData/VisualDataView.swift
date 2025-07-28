@@ -52,12 +52,11 @@ struct VisualDataView: View {
                     selectedRoute: selectedRoute
                 )
                 
-                // Comparison Section
+                // Enhanced Comparison Section - Now generates its own data
                 ComparisonSectionView(
                     selectedYear: $selectedYear,
                     selectedMonth: $selectedMonth,
-                    selectedRoutes: $selectedRoutes,
-                    monthlyData: TrafficDataService.sampleMonthlyData
+                    selectedRoutes: $selectedRoutes
                 )
             }
             .padding(.horizontal, 24)
