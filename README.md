@@ -57,14 +57,6 @@ CCTV -> Backend -> ML Model -> Redis -> Database <-> Client
 
 ---
 
-## Configuration
-
-- **Model Confidence Threshold:** `SettingsView.swift`
-- **Heatmap Radius & Intensity:** `HeatmapOverlay.swift`
-- **Time Bucket Size:** `DataProcessor.swift` (e.g., 1 min, 5 min)
-
----
-
 ## License
 
 Distributed under the MIT License. See [LICENSE](./LICENSE) for details.
