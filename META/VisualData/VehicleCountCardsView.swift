@@ -26,12 +26,11 @@ struct VehicleCountCardsView: View {
                                 .font(.system(size: 28, weight: .bold))
                                 .foregroundColor(Color("ColorBluePrimary")) // Use consistent color for all
                             
-                            // Show percentage for individual route selection
-                            if selectedRoute.name != "all-routes" {
-                                Text("\(data.percentage, specifier: "%.1f")%")
-                                    .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.secondary)
-                            }
+                            // Show percentage
+                            Text("\(data.percentage, specifier: "%.1f")% from total vehicles")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(.secondary)
+                            
                         }
                         
                         Spacer()
