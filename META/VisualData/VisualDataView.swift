@@ -31,7 +31,10 @@ struct VisualDataView: View {
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
+            VStack(alignment: .leading,spacing: 24) {
+                Text("Route-based Traffic Analytics")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(Color("ColorBluePrimary"))
                 // Heatmap Section
                 HeatmapSectionView(
                     selectedRoute: $selectedRoute,

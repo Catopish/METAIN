@@ -41,34 +41,39 @@ struct ContentView: View {
             VStack(spacing: 0) {
                 // Header Section
                 headerSection
+                    .zIndex(2)
                 
                 // Detail View
                 detailView
+                    .zIndex(1)
             }
         }
         .preferredColorScheme(.light) // Force light mode
     }
     
     private var headerSection: some View {
-        HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Hi there")
-                    .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(Color("ColorGrayPrimary"))
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Hi there")
+                        .font(.system(size: 14, weight: .regular))
+                        .foregroundColor(Color("ColorGrayPrimary"))
+                    
+                    Text("Kaori Hanami")
+                        .font(.system(size: 24, weight: .semibold))
+                        .foregroundColor(Color("ColorBluePrimary"))
+                }
                 
-                Text("Kaori Hanami")
-                    .font(.system(size: 24, weight: .semibold))
-                    .foregroundColor(Color("ColorBluePrimary"))
+                Spacer()
             }
-            
-            Spacer()
+            .padding(.horizontal, 24)
+            .padding(.top, 24)
+            .padding(.bottom, 32)
+            .background(
+                Rectangle()
+                    .fill(Color.white)
+                    .shadow(color: Color.black.opacity(0.8), radius: 6, x: 0, y: -4)
+            )
         }
-        .padding(.horizontal, 24)
-        .padding(.top, 24)
-        .padding(.bottom, 32)
-        .background(Color.white)
-    }
-
     private var sidebar: some View {
         VStack(alignment: .leading, spacing: 24) {
             // Logo (made larger)
