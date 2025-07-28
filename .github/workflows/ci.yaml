@@ -31,5 +31,5 @@ jobs:
       # - name: Run Tests
       #   run: |
       #     xcodebuild test \
-      #       -scheme MachineLearningChallenge \
+      #       -scheme META \
       #       -destination 'platform=macOS'
