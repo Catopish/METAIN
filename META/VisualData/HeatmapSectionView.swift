@@ -87,9 +87,12 @@ struct HeatmapSectionView: View {
             .zIndex(1000) // Move z-index to the entire filter row
             
             // Map - with lower z-index
-            VStack(spacing: 0) {
+            // Map and Legend Section
+            ZStack(alignment: .topTrailing) { // 1. Changed VStack to ZStack with alignment
+                
+                // 2. The map is the first (bottom) layer of the ZStack
                 TrafficMapViewWithOverlay(
-                    segments: dynamicTrafficSegments, 
+                    segments: dynamicTrafficSegments,
                     region: $region,
                     selectedRoute: selectedRoute,
                     onRouteSelected: onRouteSelectedFromMap,
@@ -99,15 +102,16 @@ struct HeatmapSectionView: View {
                 .frame(height: 400)
                 .cornerRadius(12)
                 .shadow(radius: 4)
-                .zIndex(1) // Lower z-index than date filter
-                
+                // No zIndex needed here anymore, as ZStack handles the layering
+
+                // 3. The legend is the second (top) layer
                 // Traffic intensity legend
                 HStack(spacing: 0) {
                     // Green section
                     Rectangle()
                         .fill(TrafficDataService.heatmapColorForVehicleCount(2850))
                         .frame(height: 20)
-                    
+
                     // Gradient section
                     LinearGradient(
                         colors: [
@@ -119,8 +123,8 @@ struct HeatmapSectionView: View {
                         endPoint: .trailing
                     )
                     .frame(height: 20)
-                    
-                    // Red section  
+
+                    // Red section
                     Rectangle()
                         .fill(TrafficDataService.heatmapColorForVehicleCount(5700))
                         .frame(height: 20)
@@ -143,7 +147,8 @@ struct HeatmapSectionView: View {
                 )
                 .cornerRadius(6)
                 .frame(width: 180)
-                .padding(.top, 8)
+                .padding(16) // 4. Add padding to create space from the top and right edges
+                // .padding(.top, 8) // 5. REMOVE this old padding
             }
         }
         .padding(20)

@@ -74,6 +74,9 @@ struct RawDataView: View {
     
     private var controlsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
+            Text("Detailed Traffic Logs")
+                .font(.system(size: 24, weight: .semibold))
+                .foregroundColor(Color("ColorBluePrimary"))
             HStack {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("CSV file")
