@@ -112,7 +112,8 @@ struct RawDataView: View {
 
         }
         .padding(24)
-        .background(Color.white)
+        .background(Color("ColorGraySecondary"))
+//        .background(Color.white)
     }
     
     private var dataTable: some View {
@@ -122,33 +123,33 @@ struct RawDataView: View {
                 // Table Header
                 HStack(spacing: 0) {
                     Text("Tanggal")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.system(size: 12, weight: .bold))
                         .foregroundColor(Color("ColorGrayPrimary"))
                         .frame(width: 120, alignment: .leading)
                         .padding(.leading, 24)
                     
                     Text("Jam")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.system(size: 12, weight: .bold))
                         .foregroundColor(Color("ColorGrayPrimary"))
                         .frame(width: 120, alignment: .leading)
                     
                     Text("Rute")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.system(size: 12, weight: .bold))
                         .foregroundColor(Color("ColorGrayPrimary"))
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     Text("Mobil")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.system(size: 12, weight: .bold))
                         .foregroundColor(Color("ColorGrayPrimary"))
                         .frame(width: 80, alignment: .center)
                     
                     Text("Bus")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.system(size: 12, weight: .bold))
                         .foregroundColor(Color("ColorGrayPrimary"))
                         .frame(width: 80, alignment: .center)
                     
                     Text("Truk")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.system(size: 12, weight: .bold))
                         .foregroundColor(Color("ColorGrayPrimary"))
                         .frame(width: 80, alignment: .center)
                         .padding(.trailing, 24)
