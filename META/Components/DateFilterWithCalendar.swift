@@ -8,8 +8,9 @@ import SwiftUI
 
 struct DateFilterWithCalendar: View {
     @State private var isExpanded = false
-    @State private var startDate = Calendar.current.date(byAdding: .day, value: -10, to: Date()) ?? Date()
-    @State private var endDate = Date()
+    @Binding var startDate: Date
+    @Binding var endDate: Date
+    let onDateRangeChanged: () -> Void
     
     private var dateFormatter: DateFormatter {
         let formatter = DateFormatter()
@@ -98,6 +99,9 @@ struct DateFilterWithCalendar: View {
                                           displayedComponents: .date)
                                     .datePickerStyle(.graphical)
                                     .frame(maxWidth: 280)
+                                    .onChange(of: startDate) { _ in
+                                        onDateRangeChanged()
+                                    }
                             }
                             
                             // End Date Calendar
@@ -112,6 +116,9 @@ struct DateFilterWithCalendar: View {
                                           displayedComponents: .date)
                                     .datePickerStyle(.graphical)
                                     .frame(maxWidth: 280)
+                                    .onChange(of: endDate) { _ in
+                                        onDateRangeChanged()
+                                    }
                             }
                         }
                         .padding(.horizontal, 20)
@@ -121,18 +128,21 @@ struct DateFilterWithCalendar: View {
                             Button("Today") {
                                 startDate = Date()
                                 endDate = Date()
+                                onDateRangeChanged()
                             }
                             .buttonStyle(.borderless)
                             
                             Button("Last 7 Days") {
                                 endDate = Date()
                                 startDate = Calendar.current.date(byAdding: .day, value: -7, to: endDate) ?? Date()
+                                onDateRangeChanged()
                             }
                             .buttonStyle(.borderless)
                             
                             Button("Last 30 Days") {
                                 endDate = Date()
                                 startDate = Calendar.current.date(byAdding: .day, value: -30, to: endDate) ?? Date()
+                                onDateRangeChanged()
                             }
                             .buttonStyle(.borderless)
                             
@@ -141,6 +151,7 @@ struct DateFilterWithCalendar: View {
                             Button("Clear") {
                                 startDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
                                 endDate = Date()
+                                onDateRangeChanged()
                             }
                             .buttonStyle(.borderless)
                             
@@ -148,6 +159,7 @@ struct DateFilterWithCalendar: View {
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     isExpanded = false
                                 }
+                                onDateRangeChanged()
                                 print("Date range applied: \(startDate) to \(endDate)")
                             }
                             .buttonStyle(.borderedProminent)
@@ -169,10 +181,11 @@ struct DateFilterWithCalendar: View {
                     insertion: .opacity.combined(with: .scale(scale: 0.95)).combined(with: .move(edge: .top)),
                     removal: .opacity.combined(with: .scale(scale: 0.95))
                 ))
-                .zIndex(10000) // High z-index to ensure it appears above everything
+                .zIndex(10000) // Very high z-index to ensure it appears above everything
                 .allowsHitTesting(true)
             }
         }
+        .zIndex(isExpanded ? 10000 : 1) // Adjust entire component z-index when expanded
         // Background tap to close
         .background(
             isExpanded ?
@@ -189,7 +202,15 @@ struct DateFilterWithCalendar: View {
         )
     }
 }
+
 #Preview(){
-    DateFilterWithCalendar()
-        .frame(width: 600, height: 700)
+    @State var startDate = Calendar.current.date(byAdding: .day, value: -10, to: Date()) ?? Date()
+    @State var endDate = Date()
+    
+    return DateFilterWithCalendar(
+        startDate: $startDate,
+        endDate: $endDate,
+        onDateRangeChanged: {}
+    )
+    .frame(width: 600, height: 700)
 }

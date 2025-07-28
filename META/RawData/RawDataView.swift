@@ -14,6 +14,10 @@ struct RawDataView: View {
     @State private var showingExporter = false
     @State private var csvDocument: CSVDocument?
     
+    // Date range state for filtering
+    @State private var startDate = Calendar.current.date(byAdding: .day, value: -10, to: Date()) ?? Date()
+    @State private var endDate = Date()
+    
     let filterOptions = ["All", "Car", "Bus", "Truck"]
     
     let rawTrafficData = [
@@ -32,6 +36,12 @@ struct RawDataView: View {
         RawTrafficEntry(id: 13, tanggal: "1 July 2025", jam: "01.00 - 02.00", route: "bintaro-out", mobil: 170, bus: 112, truk: 47),
         RawTrafficEntry(id: 14, tanggal: "1 July 2025", jam: "01.00 - 02.00", route: "bintaro-in", mobil: 118, bus: 49, truk: 46)
     ]
+    
+    // Callback for when date range changes
+    private func onDateRangeChanged() {
+        // This could be used to filter data by date range in the future
+        // For now, we'll keep the existing filtering behavior
+    }
     
     var filteredData: [RawTrafficEntry] {
         rawTrafficData.filter { entry in
@@ -87,7 +97,7 @@ struct RawDataView: View {
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(Color("ColorBluePrimary"))
                     
-                    DateFilterWithCalendar()
+                    DateFilterWithCalendar(startDate: $startDate, endDate: $endDate, onDateRangeChanged: onDateRangeChanged)
                         .frame(width: 250, height: 30)
                 }
                 
