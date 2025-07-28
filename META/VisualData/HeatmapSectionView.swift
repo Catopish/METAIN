@@ -80,7 +80,7 @@ struct HeatmapSectionView: View {
                     endDate: $endDate,
                     onDateRangeChanged: onDateRangeChanged
                 )
-                .frame(width: 200)
+                .frame(width: 250)
                 
                 Spacer()
             }
@@ -88,7 +88,7 @@ struct HeatmapSectionView: View {
             
             // Map - with lower z-index
             // Map and Legend Section
-            ZStack(alignment: .topTrailing) { // 1. Changed VStack to ZStack with alignment
+            ZStack(alignment: .topTrailing) {
                 
                 // 2. The map is the first (bottom) layer of the ZStack
                 TrafficMapViewWithOverlay(
@@ -102,53 +102,72 @@ struct HeatmapSectionView: View {
                 .frame(height: 400)
                 .cornerRadius(12)
                 .shadow(radius: 4)
-                // No zIndex needed here anymore, as ZStack handles the layering
-
-                // 3. The legend is the second (top) layer
-                // Traffic intensity legend
-                HStack(spacing: 0) {
-                    // Green section
-                    Rectangle()
-                        .fill(TrafficDataService.heatmapColorForVehicleCount(2850))
-                        .frame(height: 20)
-
-                    // Gradient section
-                    LinearGradient(
-                        colors: [
-                            TrafficDataService.heatmapColorForVehicleCount(2850),
-                            TrafficDataService.heatmapColorForVehicleCount(3990),
-                            TrafficDataService.heatmapColorForVehicleCount(5700)
-                        ],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                    .frame(height: 20)
-
-                    // Red section
-                    Rectangle()
-                        .fill(TrafficDataService.heatmapColorForVehicleCount(5700))
-                        .frame(height: 20)
-                }
-                .overlay(
-                    HStack {
-                        Text("Light")
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundColor(.black)
-                        Spacer()
-                        Text("Medium")
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundColor(.black)
-                        Spacer()
-                        Text("Heavy")
-                            .font(.system(size: 10, weight: .medium))
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack{
+                        // Legend Title
+                        Text("Legend")
+                            .font(.system(size: 14, weight: .semibold))
                             .foregroundColor(.white)
                     }
-                    .padding(.horizontal, 8)
-                )
-                .cornerRadius(6)
+                    HStack(spacing: 0) {
+                        // Green section
+                        Rectangle()
+                            .fill(TrafficDataService.heatmapColorForVehicleCount(2850))
+                            .frame(height: 20)
+
+                        // Gradient section
+                        LinearGradient(
+                            colors: [
+                                TrafficDataService.heatmapColorForVehicleCount(2850),
+                                TrafficDataService.heatmapColorForVehicleCount(3990),
+                                TrafficDataService.heatmapColorForVehicleCount(5700)
+                            ],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                        .frame(height: 20)
+
+                        // Red section
+                        Rectangle()
+                            .fill(TrafficDataService.heatmapColorForVehicleCount(5700))
+                            .frame(height: 20)
+                    }
+                    .overlay(
+                        HStack {
+                            Text("Light")
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text("Medium")
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text("Heavy")
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.horizontal, 8)
+                    )
+                    .cornerRadius(6)
+                    
+                    HStack {
+                        Text("≤ 2850")
+                        Spacer()
+                        Text("3990")
+                        Spacer()
+                        Text("≥ 5700")
+                    }
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundColor(.white) // Use a subtle color for the numbers
+                    .padding(.horizontal, 4)
+                }
                 .frame(width: 180)
-                .padding(16) // 4. Add padding to create space from the top and right edges
-                // .padding(.top, 8) // 5. REMOVE this old padding
+                .padding(4)
+                .background(
+                    Color.secondary.opacity(0.65)
+                        .cornerRadius(10)
+                      )
             }
         }
         .padding(20)
