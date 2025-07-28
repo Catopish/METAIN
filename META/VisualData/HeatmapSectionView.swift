@@ -4,10 +4,24 @@ import MapKit
 struct HeatmapSectionView: View {
     @Binding var selectedRoute: RouteOption
     @Binding var region: MKCoordinateRegion
+    @Binding var startDate: Date
+    @Binding var endDate: Date
+    let onDateRangeChanged: () -> Void
     
     // Computed property to get dynamic traffic segments based on selected route
     private var dynamicTrafficSegments: [TrafficSegment] {
         TrafficDataService.getTrafficSegmentsForRoute(selectedRoute)
+    }
+    
+    // Callback for when route is selected via map tap
+    private func onRouteSelectedFromMap(_ route: RouteOption) {
+        selectedRoute = route
+        
+        // Update map region to focus on the selected route
+        region = MKCoordinateRegion(
+            center: TrafficDataService.getCenterCoordinate(for: route),
+            span: TrafficDataService.getZoomLevel(for: route)
+        )
     }
     
     var body: some View {
@@ -57,8 +71,12 @@ struct HeatmapSectionView: View {
                 .frame(width: 200)
                 
                 // Date Filter with Calendar
-                DateFilterWithCalendar()
-                    .frame(width: 200)
+                DateFilterWithCalendar(
+                    startDate: $startDate,
+                    endDate: $endDate,
+                    onDateRangeChanged: onDateRangeChanged
+                )
+                .frame(width: 200)
                 
                 Spacer()
             }
@@ -69,7 +87,10 @@ struct HeatmapSectionView: View {
                 TrafficMapViewWithOverlay(
                     segments: dynamicTrafficSegments, 
                     region: $region,
-                    selectedRoute: selectedRoute
+                    selectedRoute: selectedRoute,
+                    onRouteSelected: onRouteSelectedFromMap,
+                    startDate: startDate,
+                    endDate: endDate
                 )
                 .frame(height: 400)
                 .cornerRadius(12)

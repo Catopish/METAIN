@@ -262,14 +262,23 @@ struct TrafficDataService {
         }
     }
     
-    // Helper function to get vehicle data for selected route
-    static func getVehicleDataForRoute(_ route: RouteOption, timeRange: String = "00.00 - 01.00") -> [VehicleAnalytics] {
+    // Helper function to get vehicle data for selected route with date range support
+    static func getVehicleDataForRoute(_ route: RouteOption, startDate: Date, endDate: Date) -> [VehicleAnalytics] {
+        // Create date formatter to match our sample data format
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "d MMMM yyyy"
+        
+        // For demo purposes, we'll simulate data for the date range
+        // In a real app, you would filter actual data by date range
+        let daysDifference = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 1
+        let multiplier = max(1, daysDifference + 1) // +1 to include both start and end dates
+        
         if route.name == "all-routes" {
-            // Calculate totals for all routes
-            let allRouteData = sampleHourlyData.filter { $0.timeRange == timeRange }
-            let totalCars = allRouteData.map { $0.carCount }.reduce(0, +)
-            let totalBuses = allRouteData.map { $0.busCount }.reduce(0, +)
-            let totalTrucks = allRouteData.map { $0.truckCount }.reduce(0, +)
+            // Calculate cumulative totals for all routes over the date range
+            let baseData = sampleHourlyData.filter { $0.timeRange == "00.00 - 01.00" }
+            let totalCars = baseData.map { $0.carCount }.reduce(0, +) * multiplier
+            let totalBuses = baseData.map { $0.busCount }.reduce(0, +) * multiplier
+            let totalTrucks = baseData.map { $0.truckCount }.reduce(0, +) * multiplier
             let grandTotal = totalCars + totalBuses + totalTrucks
             
             return [
@@ -296,51 +305,78 @@ struct TrafficDataService {
                 )
             ]
         } else {
-            // Get data for specific route
-            let routeData = sampleHourlyData.filter { $0.route == route.name && $0.timeRange == timeRange }
+            // Get cumulative data for specific route over the date range
+            let routeData = sampleHourlyData.filter { $0.route == route.name && $0.timeRange == "00.00 - 01.00" }
             if let data = routeData.first {
-                let total = data.totalVehicles
+                let totalCars = data.carCount * multiplier
+                let totalBuses = data.busCount * multiplier
+                let totalTrucks = data.truckCount * multiplier
+                let total = totalCars + totalBuses + totalTrucks
+                
                 return [
                     VehicleAnalytics(
                         type: "Car", 
-                        count: Double(data.carCount), 
-                        percentage: total > 0 ? Double(data.carCount) / Double(total) * 100 : 0,
+                        count: Double(totalCars), 
+                        percentage: total > 0 ? Double(totalCars) / Double(total) * 100 : 0,
                         color: Color("ColorBluePrimary"), 
                         iconName: "CarCardIcon"
                     ),
                     VehicleAnalytics(
                         type: "Bus", 
-                        count: Double(data.busCount), 
-                        percentage: total > 0 ? Double(data.busCount) / Double(total) * 100 : 0,
+                        count: Double(totalBuses), 
+                        percentage: total > 0 ? Double(totalBuses) / Double(total) * 100 : 0,
                         color: Color("ColorBluePrimary"), 
                         iconName: "BusCardIcon"
                     ),
                     VehicleAnalytics(
                         type: "Truck", 
-                        count: Double(data.truckCount), 
-                        percentage: total > 0 ? Double(data.truckCount) / Double(total) * 100 : 0,
+                        count: Double(totalTrucks), 
+                        percentage: total > 0 ? Double(totalTrucks) / Double(total) * 100 : 0,
                         color: Color("ColorBluePrimary"), 
                         iconName: "TruckCardIcon"
                     )
                 ]
             } else {
-                // Return default data if no specific data found
-                return sampleVehicleData
+                // Return scaled default data if no specific data found
+                return sampleVehicleData.map { analytics in
+                    VehicleAnalytics(
+                        type: analytics.type,
+                        count: analytics.count * Double(multiplier),
+                        percentage: analytics.percentage,
+                        color: analytics.color,
+                        iconName: analytics.iconName
+                    )
+                }
             }
         }
     }
     
-    // Helper function to get total traffic and percentage for a specific route
-    static func getRouteTrafficInfo(_ route: RouteOption, timeRange: String = "00.00 - 01.00") -> (total: Int, percentage: Double) {
-        let allRouteData = sampleHourlyData.filter { $0.timeRange == timeRange }
-        let grandTotal = allRouteData.map { $0.totalVehicles }.reduce(0, +)
+    // Legacy function for backward compatibility (uses single day)
+    static func getVehicleDataForRoute(_ route: RouteOption, timeRange: String = "00.00 - 01.00") -> [VehicleAnalytics] {
+        let today = Date()
+        return getVehicleDataForRoute(route, startDate: today, endDate: today)
+    }
+    
+    // Helper function to get total traffic and percentage for a specific route with date range
+    static func getRouteTrafficInfo(_ route: RouteOption, startDate: Date, endDate: Date) -> (total: Int, percentage: Double) {
+        let daysDifference = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 1
+        let multiplier = max(1, daysDifference + 1)
         
-        let routeData = sampleHourlyData.filter { $0.route == route.name && $0.timeRange == timeRange }
-        let routeTotal = routeData.first?.totalVehicles ?? 0
+        let allRouteData = sampleHourlyData.filter { $0.timeRange == "00.00 - 01.00" }
+        let grandTotal = allRouteData.map { $0.totalVehicles }.reduce(0, +) * multiplier
+        
+        let routeData = sampleHourlyData.filter { $0.route == route.name && $0.timeRange == "00.00 - 01.00" }
+        let routeTotal = (routeData.first?.totalVehicles ?? 0) * multiplier
         
         let percentage = grandTotal > 0 ? Double(routeTotal) / Double(grandTotal) * 100 : 0
         
         return (total: routeTotal, percentage: percentage)
+    }
+    
+    // Legacy function for backward compatibility
+    static func getRouteTrafficInfo(_ route: RouteOption, timeRange: String = "00.00 - 01.00") -> (total: Int, percentage: Double) {
+        let today = Date()
+        return getRouteTrafficInfo(route, startDate: today, endDate: today)
     }
     
     // Helper function to get data for a specific route
