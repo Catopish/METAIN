@@ -79,7 +79,7 @@ struct RawDataView: View {
                 .foregroundColor(Color("ColorBluePrimary"))
             HStack {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("CSV file")
+                    Text("Traffic Reports")
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(Color("ColorBluePrimary"))
                     
