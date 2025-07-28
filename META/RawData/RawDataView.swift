@@ -113,99 +113,105 @@ struct RawDataView: View {
     }
     
     private var dataTable: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Table Header
-            HStack(spacing: 0) {
-                Text("Tanggal")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(Color("ColorGrayPrimary"))
-                    .frame(width: 120, alignment: .leading)
-                    .padding(.leading, 24)
+        VStack(spacing: 0) {
+            // Unified table with header and body
+            VStack(spacing: 0) {
+                // Table Header
+                HStack(spacing: 0) {
+                    Text("Tanggal")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(Color("ColorGrayPrimary"))
+                        .frame(width: 120, alignment: .leading)
+                        .padding(.leading, 24)
+                    
+                    Text("Jam")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(Color("ColorGrayPrimary"))
+                        .frame(width: 120, alignment: .leading)
+                    
+                    Text("Rute")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(Color("ColorGrayPrimary"))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    Text("Mobil")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(Color("ColorGrayPrimary"))
+                        .frame(width: 80, alignment: .center)
+                    
+                    Text("Bus")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(Color("ColorGrayPrimary"))
+                        .frame(width: 80, alignment: .center)
+                    
+                    Text("Truk")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(Color("ColorGrayPrimary"))
+                        .frame(width: 80, alignment: .center)
+                        .padding(.trailing, 24)
+                }
+                .padding(.vertical, 16)
+                .background(Color("ColorGraySecondary").opacity(0.3))
                 
-                Text("Jam")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(Color("ColorGrayPrimary"))
-                    .frame(width: 120, alignment: .leading)
-                
-                Text("Rute")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(Color("ColorGrayPrimary"))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                
-                Text("Mobil")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(Color("ColorGrayPrimary"))
-                    .frame(width: 80, alignment: .center)
-                
-                Text("Bus")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(Color("ColorGrayPrimary"))
-                    .frame(width: 80, alignment: .center)
-                
-                Text("Truk")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(Color("ColorGrayPrimary"))
-                    .frame(width: 80, alignment: .center)
-                    .padding(.trailing, 24)
-            }
-            .padding(.vertical, 16)
-            .background(Color("ColorGraySecondary").opacity(0.3))
-            
-            // Table Rows
-            ScrollView {
-                LazyVStack(spacing: 0) {
-                    ForEach(Array(filteredData.enumerated()), id: \.element.id) { index, entry in
-                        HStack(spacing: 0) {
-                            Text(entry.date)
-                                .font(.system(size: 14))
-                                .foregroundColor(Color("ColorBluePrimary"))
-                                .frame(width: 120, alignment: .leading)
-                                .padding(.leading, 24)
-                            
-                            Text(entry.timeRange)
-                                .font(.system(size: 14))
-                                .foregroundColor(Color("ColorBluePrimary"))
-                                .frame(width: 120, alignment: .leading)
-                            
-                            Text(entry.route)
-                                .font(.system(size: 14))
-                                .foregroundColor(Color("ColorBluePrimary"))
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            
-                            Text("\(entry.carCount)")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(Color("ColorBluePrimary"))
-                                .frame(width: 80, alignment: .center)
-                            
-                            Text("\(entry.busCount)")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(Color("ColorBlueSecondary"))
-                                .frame(width: 80, alignment: .center)
-                            
-                            Text("\(entry.truckCount)")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(Color("ColorGrayPrimary"))
-                                .frame(width: 80, alignment: .center)
-                                .padding(.trailing, 24)
-                        }
-                        .padding(.vertical, 12)
-                        .background(
-                            index % 2 == 0 ?
-                            Color("ColorGraySecondary").opacity(0.05) :
-                            Color.white
-                        )
-                        
-                        if index < filteredData.count - 1 {
-                            Divider()
-                                .background(Color("ColorGraySecondary").opacity(0.3))
+                // Table Body
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        ForEach(Array(filteredData.enumerated()), id: \.element.id) { index, entry in
+                            VStack(spacing: 0) {
+                                HStack(spacing: 0) {
+                                    Text(entry.date)
+                                        .font(.system(size: 14))
+                                        .foregroundColor(Color("ColorBluePrimary"))
+                                        .frame(width: 120, alignment: .leading)
+                                        .padding(.leading, 24)
+                                    
+                                    Text(entry.timeRange)
+                                        .font(.system(size: 14))
+                                        .foregroundColor(Color("ColorBluePrimary"))
+                                        .frame(width: 120, alignment: .leading)
+                                    
+                                    Text(entry.route)
+                                        .font(.system(size: 14))
+                                        .foregroundColor(Color("ColorBluePrimary"))
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    
+                                    Text("\(entry.carCount)")
+                                        .font(.system(size: 14, weight: .medium))
+                                        .foregroundColor(Color("ColorBluePrimary"))
+                                        .frame(width: 80, alignment: .center)
+                                    
+                                    Text("\(entry.busCount)")
+                                        .font(.system(size: 14, weight: .medium))
+                                        .foregroundColor(Color("ColorBlueSecondary"))
+                                        .frame(width: 80, alignment: .center)
+                                    
+                                    Text("\(entry.truckCount)")
+                                        .font(.system(size: 14, weight: .medium))
+                                        .foregroundColor(Color("ColorGrayPrimary"))
+                                        .frame(width: 80, alignment: .center)
+                                        .padding(.trailing, 24)
+                                }
+                                .padding(.vertical, 12)
+                                .background(
+                                    index % 2 == 0 ?
+                                    Color("ColorGraySecondary").opacity(0.05) :
+                                    Color.white
+                                )
+                                
+                                if index < filteredData.count - 1 {
+                                    Divider()
+                                        .background(Color("ColorGraySecondary").opacity(0.3))
+                                }
+                            }
                         }
                     }
                 }
+                .background(Color.white)
             }
             .background(Color.white)
+            .cornerRadius(12)
+            .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
         }
-        .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
         .padding(24)
     }
     
