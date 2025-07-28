@@ -28,5 +28,6 @@ struct METAApp: App {
             ContentView()
         }
         .modelContainer(sharedModelContainer)
+        .windowToolbarStyle(.unifiedCompact(showsTitle: false))
     }
 }
