@@ -48,7 +48,7 @@ struct LoginView: View {
                 BackgroundView()
 
                 HStack {
-                    // Logo and title
+//                    
                     VStack {
                         Image("METAINLogo")
                             .resizable()
@@ -60,43 +60,52 @@ struct LoginView: View {
                     }
                     .padding(.leading, 60)
                     .frame(maxWidth: .infinity, alignment: .center)
-
+//
                     // Login Form
                     VStack(spacing: 20) {
                         Text("Login")
-                            .font(.title)
+                            .padding(.top, 100)
+                            .font(.largeTitle)
                             .bold()
                             .foregroundColor(Color(red: 0.0, green: 0.33, blue: 0.61))
                             .frame(maxWidth: .infinity, alignment: .center)
+//                            .padding(.bottom, 30)
+                        
+                        
 
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Username")
                                 .font(.subheadline)
+                                .bold()
                                 .foregroundColor(Color(red: 0.0, green: 0.33, blue: 0.61))
                             TextField("", text: $username)
-                                .padding(2)
+                                .padding()
                                 .background(Color.white)
                                 .clipShape(RoundedRectangle(cornerRadius: 20))
                                 .shadow(radius: 1)
+                                .foregroundColor(Color.black)
                         }
-
+//
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Password")
                                 .font(.subheadline)
+                                .bold()
                                 .foregroundColor(Color(red: 0.0, green: 0.33, blue: 0.61))
                             SecureField("", text: $password)
-                                .padding(2)
+                                .padding()
                                 .background(Color.white)
                                 .clipShape(RoundedRectangle(cornerRadius: 20))
                                 .shadow(radius: 1)
+                                .foregroundColor(Color.black)
                         }
-
-                        // ✅ Navigation Link
+//
+//                        
                         NavigationLink(destination: ContentView(), isActive: $navigate) {
                             EmptyView()
                         }.hidden()
-
-                        // ✅ Button triggers navigation
+//
+//
+                        
                         HStack {
                             Button(action: {
                                 navigate = true
@@ -111,13 +120,18 @@ struct LoginView: View {
                             .clipShape(Capsule())
                             .shadow(color: .gray.opacity(0.2), radius: 4, x: 0, y: 2)
                         }
+                        .padding(.top, 70)
                         .frame(maxWidth: .infinity, alignment: .center)
+                        
+                        Spacer()
+                        
                     }
                     .padding(30)
-                    .background(Color(.white).opacity(0.6))
+                    .frame(width: 500, height: 600)
+                    .background(Color(.white).opacity(0.7))
                     .cornerRadius(20)
-                    .frame(width: 500)
-                    .padding(.trailing, 60)
+                    
+                    .padding(.trailing, 100)
                 }
             }
         }
@@ -127,6 +141,6 @@ struct LoginView: View {
 #Preview {
     LoginView()
         .frame(width: 1800,height: 1200)
-//        .frame(maxWidth: .infinity, maxHeight: .infinity)
-//        .background(Color.black)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.black)
 }
