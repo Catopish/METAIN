@@ -50,7 +50,7 @@ struct LoginView: View {
                 HStack {
 //                    
                     VStack {
-                        Image("METAINLogo")
+                        Image("LoginIcon")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 800, height: 800)
@@ -75,8 +75,7 @@ struct LoginView: View {
 
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Username")
-                                .font(.subheadline)
-                                .bold()
+                                .font(.headline)
                                 .foregroundColor(Color(red: 0.0, green: 0.33, blue: 0.61))
                             TextField("", text: $username)
                                 .padding()
@@ -88,8 +87,7 @@ struct LoginView: View {
 //
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Password")
-                                .font(.subheadline)
-                                .bold()
+                                .font(.headline)
                                 .foregroundColor(Color(red: 0.0, green: 0.33, blue: 0.61))
                             SecureField("", text: $password)
                                 .padding()
