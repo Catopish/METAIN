@@ -50,16 +50,13 @@ struct LoginView: View {
                 HStack {
                     // Logo and title
                     VStack {
-                        Image("nusantara_logo")
+                        Image("METAINLogo")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 200, height: 100)
+                            .frame(width: 800, height: 800)
                             .padding(.bottom, 10)
+                            .offset(x:-200)
 
-                        Text("Dashboard")
-                            .font(.title3)
-                            .bold()
-                            .foregroundColor(Color(red: 0.0, green: 0.33, blue: 0.61))
                     }
                     .padding(.leading, 60)
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -117,9 +114,9 @@ struct LoginView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                     }
                     .padding(30)
-                    .background(Color(.white).opacity(0.95))
+                    .background(Color(.white).opacity(0.6))
                     .cornerRadius(20)
-                    .frame(width: 270)
+                    .frame(width: 500)
                     .padding(.trailing, 60)
                 }
             }
@@ -129,6 +126,7 @@ struct LoginView: View {
 
 #Preview {
     LoginView()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black)
+        .frame(width: 1800,height: 1200)
+//        .frame(maxWidth: .infinity, maxHeight: .infinity)
+//        .background(Color.black)
 }
