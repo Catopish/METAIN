@@ -1,57 +1,66 @@
 {
   "images" : [
     {
-      "filename" : "logo metain non backgorund.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "size" : "1024x1024"
+    },
+    {
+      "filename" : "LOGO Metain (1).png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "16x16"
     },
     {
+      "filename" : "LOGO Metain (2).png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "16x16"
     },
     {
-      "filename" : "logo metain non backgorund 2.png",
+      "filename" : "LOGO Metain (2) 1.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "32x32"
     },
     {
+      "filename" : "LOGO Metain (3).png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "32x32"
     },
     {
-      "filename" : "logo metain non backgorund 1.png",
+      "filename" : "LOGO Metain (4).png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "128x128"
     },
     {
+      "filename" : "LOGO Metain (5).png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "128x128"
     },
     {
-      "filename" : "logo metain non backgorund 3.png",
+      "filename" : "LOGO Metain (5) 1.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "256x256"
     },
     {
+      "filename" : "LOGO Metain (6).png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "256x256"
     },
     {
-      "filename" : "logo metain non backgorund 4.png",
+      "filename" : "LOGO Metain (6) 1.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "512x512"
     },
     {
-      "filename" : "logo metain non backgorund 5.png",
+      "filename" : "LOGO Metain (7).png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "512x512"
