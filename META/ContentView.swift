@@ -48,7 +48,8 @@ struct ContentView: View {
                     .zIndex(1)
             }
         }
-        .preferredColorScheme(.light) // Force light mode
+        .navigationBarBackButtonHidden(true)
+        .preferredColorScheme(.light)
     }
     
     private var headerSection: some View {
