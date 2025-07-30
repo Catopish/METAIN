@@ -25,7 +25,7 @@ struct METAApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            LoginView()
         }
         .modelContainer(sharedModelContainer)
         .windowToolbarStyle(.unifiedCompact(showsTitle: false))
