@@ -1,7 +1,7 @@
 # METAIN
 
 **Overview**
-META is a macOS application built with SwiftUI that leverages a CoreML‑converted YOLOv12 model to detect vehicles in camera or video feeds. It visualizes traffic density as a heatmap on MapKit, presents interactive charts of volume over time, and exports aggregated data as CSV for further analysis.
+META is a macOS application built with SwiftUI that leverages a CoreML‑converted YOLOv11 model to detect vehicles in camera or video feeds. It visualizes traffic density as a heatmap on MapKit, presents interactive charts of volume over time, and exports aggregated data as CSV for further analysis.
 
 **Key Features**
 
